@@ -1,3 +1,6 @@
+:root{
+    --border-color: black;
+}
 * {
     box-sizing: border-box;
 }
@@ -9,4 +12,9 @@
     height: 100%;
     width: 100%;
     border: 2px solid red;
+}
+
+footer{
+    text-align: center;
+    margin: 10px;
 }
