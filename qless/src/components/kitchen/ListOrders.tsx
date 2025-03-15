@@ -12,14 +12,14 @@ const orders = [{
 }]
 
 //gets active orders from db and stores in array
-function getOrders() {
-    const openOrders= orders.filter(order => order.orderStatus!=="Finished")
+function getOrders(status: string) {
+    const openOrders = orders.filter(order => order.orderStatus === status)
     return openOrders;
 }
 
-export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum }:
-    { setIsShowing: React.Dispatch<React.SetStateAction<string>>; setOrderNum: React.Dispatch<React.SetStateAction<number>> }) {
-    const openOrders = getOrders();
+export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum, status }:
+    { setIsShowing: React.Dispatch<React.SetStateAction<string>>; setOrderNum: React.Dispatch<React.SetStateAction<number>>; status: string }) {
+    const openOrders = getOrders(status);
 
     //for when you click the "veiw details" button
     function handleDetailsClick(orderId: number) {
@@ -29,9 +29,9 @@ export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: se
         }
         return click;
     }
-    
+
     //for when you click the "finish" button
-    function handleFinishClick(orderId: number){
+    function handleFinishClick(orderId: number) {
         const click = () => {
             setIsShowing("finish");
             setOrderNum(orderId);
@@ -41,15 +41,21 @@ export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: se
 
     //map each active order
     const listItems = openOrders.map(order =>
-        <li key={order.orderId}>
-            <ul className='orderList'>
-                <li>Order Number: {order.orderId}</li>
-                <li>Time Submitted: {order.timePlaced.toLocaleTimeString()}</li>
-                <li>Status: {order.orderStatus}</li>
-            </ul>
-            <button className='listButton' onClick={handleDetailsClick(order.orderId)}>View Details</button>
-            <button className='listButton' onClick={handleFinishClick(order.orderId)}>Finish</button>
-        </li>
+        
+            <li className='listItem' key={order.orderId}>
+                <div className="listLeft">
+                    <ul className='orderList'>
+                        <li>Order Number: {order.orderId}</li>
+                        <li>Time Submitted: {order.timePlaced.toLocaleTimeString()}</li>
+                        <li>Status: {order.orderStatus}</li>
+                    </ul>
+                </div>
+                <div className="listRight">
+                    <button className='listButton' onClick={handleDetailsClick(order.orderId)}>View Details</button>
+                    <button className='listButton' onClick={handleFinishClick(order.orderId)}>Finish</button>
+                </div>
+            </li>
+        
     );
 
     //return list

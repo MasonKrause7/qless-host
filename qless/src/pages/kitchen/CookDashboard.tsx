@@ -7,10 +7,17 @@ export default function CookDashboard() {
     const [orderNum, setOrderNum] = useState(0);
 
     return (
-        <div className='pageContainer'>
-            {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} />}
-            {isShowing === "details" && <DetailsButton setIsShowing={setIsShowing} orderNum={orderNum} />}
-            {isShowing === "finish" && <FinishButton setIsShowing={setIsShowing} orderNum={orderNum}/>}
+        <div className="pageContainer">
+            <div className='cookDashContainer'>
+                <div className="cookDashLeft">
+                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} status="In Progress" />}
+                    {isShowing === "details" && <DetailsButton setIsShowing={setIsShowing} orderNum={orderNum} />}
+                </div>
+                <div className="cookDashRight">
+                    <p>Just For Testing</p>
+                </div>
+                {isShowing === "finish" && <FinishButton setIsShowing={setIsShowing} orderNum={orderNum} />}
+            </div>
         </div>
     )
 }
@@ -27,7 +34,7 @@ function DetailsButton({ setIsShowing, orderNum }:
 
 function FinishButton({ setIsShowing, orderNum }:
     { setIsShowing: React.Dispatch<React.SetStateAction<string>>; orderNum: number }) {
-    return(
+    return (
         <>
             <h1>Finish for: {orderNum}</h1>
             <button onClick={() => setIsShowing("list")}>Back</button>
