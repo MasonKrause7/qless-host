@@ -30,6 +30,19 @@ export default function CookDashboard() {
     )
 }
 
+export type Orders = {
+    order_id:number,
+    subtotal: number,
+    tax_rate: number,
+    customer_phone_number: string,
+    time_received: Date,
+    time_being_cooked: Date | null,
+    time_ready: Date | null,
+    time_picked_up: Date | null,
+    status_id: number,
+    truck_id: number
+}
+
 //converts an order status number to its coresponding string
 export function getOrderStatus(id: number) {
     let status = "";
