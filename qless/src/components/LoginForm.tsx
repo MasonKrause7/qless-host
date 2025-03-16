@@ -1,12 +1,16 @@
 import supabase from '../utils/supabase';
+import { useNavigate } from 'react-router-dom';
+
 
 
 function LoginForm() {
 
+    const navigate = useNavigate();
 
     const handleLoginSubmission = async (event: React.FormEvent<HTMLFormElement>)=> {
         event.preventDefault();
 
+        
 
         const formData = new FormData(event.currentTarget);
         const email = formData.get("emailLogin") as string;
@@ -19,6 +23,12 @@ function LoginForm() {
             });
             if (data.user !== null && data.session !== null){
                 console.log(`successfully logged in ${data.user.user_metadata.first_name}`);
+                if (data.user.user_metadata.is_manager){
+                    navigate('/manage');
+                }
+                else{
+                    navigate('/cook');
+                }
             }
             else if (error !== null){
                 console.log(`Error logging in that user: ${error.message}`);
