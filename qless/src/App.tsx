@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import NotFound from './pages/NotFound';
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/login-signup/LandingPage';
 import CookDashboard from './pages/kitchen/CookDashboard';
 import ManagerDashboard from './pages/manager/ManagerDashboard';
 import './styles/global.css';
