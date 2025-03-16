@@ -14,8 +14,8 @@ function SignUpForm() {
         if (notificationText === null) return;
 
         const formData = new FormData(event.currentTarget);
-        const email = formData.get("email") as string;
-        const password = formData.get("password") as string;
+        const email = formData.get("emailSignUp") as string;
+        const password = formData.get("passwordSignUp") as string;
         const confirmPassword = formData.get("confirmPassword") as string;
 
         
@@ -62,8 +62,8 @@ function SignUpForm() {
             <form onSubmit={handleSignUpSubmission}>
                 <input id='firstName' name="firstName" type="text" placeholder="First Name" onChange={(event) => setFirstName(event.target.value)} />
                 <input id='lastName' name='lastName' type="text" placeholder="Last Name" onChange={(event) => setLastName(event.target.value)} />
-                <input id='email' name='email' type="email" placeholder="Email" />
-                <input id='password' name='password' type="password" placeholder="Password" />
+                <input id='emailSignUp' name='emailSignUp' type="email" placeholder="Email" />
+                <input id='passwordSignUp' name='passwordSignUp' type="password" placeholder="Password" />
                 <input id='confirmPassword' name='confirmPassword' type="password" placeholder="Confirm Password" />
                 <button type="submit">Sign Up</button>
             </form>
