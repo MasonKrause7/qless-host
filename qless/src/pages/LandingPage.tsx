@@ -22,6 +22,7 @@ function LandingPage() {
                 {loginShowing && <LoginForm />}
                 {!loginShowing && <SignUpForm />} 
             </div>
+            <a href="/cook">Cook Page</a>
         </div>
     )
 }

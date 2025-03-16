@@ -1,25 +1,43 @@
 import '../../styles/kitchen/cookDashboard.css';
+import supabase from '../../utils/supabase';
+import { getOrderStatus } from '../../pages/kitchen/CookDashboard';
 
-//temporary objects for testing 
-const orders = [{
-    orderId: 0,
-    timePlaced: new Date(2025, 2, 8, 10, 0, 0, 0),
-    orderStatus: "In Progress"
-}, {
-    orderId: 1,
-    timePlaced: new Date(2025, 2, 8, 10, 5, 0, 0),
-    orderStatus: "In Progress"
-}]
+/*Order Status:
+    1: Recieved
+    2: Being Cooked
+    3: Ready
+    4: Picked Up
+*/
+
 
 //gets active orders from db and stores in array
-function getOrders(status: string) {
-    const openOrders = orders.filter(order => order.orderStatus === status)
+async function getOrders() {
+    const { data, error } = await supabase.from('orders').select();
+    let openOrders = [];
+    try {
+        if (data === null) {
+            console.log("Orders is NULL");
+            throw new TypeError();
+        } else {
+            openOrders = data.filter(order => order.status_id !== 4)
+        }
+    }
+    catch (err) {
+        if (err instanceof TypeError) {
+            console.log("Orders is NULL");
+        }
+    }
+
+    console.log(error);
+
     return openOrders;
 }
 
-export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum, status }:
-    { setIsShowing: React.Dispatch<React.SetStateAction<string>>; setOrderNum: React.Dispatch<React.SetStateAction<number>>; status: string }) {
-    const openOrders = getOrders(status);
+const openOrders = await getOrders();
+
+export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum }:
+    { setIsShowing: React.Dispatch<React.SetStateAction<string>>; setOrderNum: React.Dispatch<React.SetStateAction<number>>; }) {
+
 
     //for when you click the "veiw details" button
     function handleDetailsClick(orderId: number) {
@@ -41,23 +59,25 @@ export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: se
 
     //map each active order
     const listItems = openOrders.map(order =>
-        
-            <li className='listItem' key={order.orderId}>
-                <div className="listLeft">
-                    <ul className='orderList'>
-                        <li>Order Number: {order.orderId}</li>
-                        <li>Time Submitted: {order.timePlaced.toLocaleTimeString()}</li>
-                        <li>Status: {order.orderStatus}</li>
-                    </ul>
-                </div>
-                <div className="listRight">
-                    <button className='listButton' onClick={handleDetailsClick(order.orderId)}>View Details</button>
-                    <button className='listButton' onClick={handleFinishClick(order.orderId)}>Finish</button>
-                </div>
-            </li>
-        
+
+        <li className='listItem' key={order.order_id}>
+            <div className="listLeft">
+                <ul className='orderList'>
+                    <li>Order Number: {order.order_id}</li>
+                    <li>Time Submitted: {order.time_received.toLocaleTimeString()}</li>
+                    <li>Status: {getOrderStatus(order.status_id)}</li>
+                </ul>
+            </div>
+            <div className="listRight">
+                <button className='listButton' onClick={handleDetailsClick(order.orderId)}>View Details</button>
+                <button className='listButton' onClick={handleFinishClick(order.orderId)}>Finish</button>
+            </div>
+        </li>
+
     );
 
     //return list
     return <ol>{listItems}</ol>
 }
+
+
