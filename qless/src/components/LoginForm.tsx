@@ -10,13 +10,12 @@ function LoginForm() {
     const handleLoginSubmission = async (event: React.FormEvent<HTMLFormElement>)=> {
         event.preventDefault();
 
-        
 
         const formData = new FormData(event.currentTarget);
         const email = formData.get("emailLogin") as string;
         const password = formData.get("passwordLogin") as string;
 
-        try{
+        try {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password

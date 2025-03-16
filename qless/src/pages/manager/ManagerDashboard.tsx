@@ -1,4 +1,4 @@
-
+import TruckManagement from "../../components/manager/TruckManagement";
 
 
 
@@ -7,9 +7,11 @@ function ManagerDashboard() {
 
     return (
         <div>
-            <h2>MANAGER DASHBOARD</h2>
+            <h1>MANAGER DASHBOARD</h1>
 
-            
+            <TruckManagement />
+
+
         </div>
     )
 }
