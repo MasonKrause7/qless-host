@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../styles/manager/managerDashboard.css';
+import type { User } from '../login-signup/LoginForm';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 
 
 type ManagerDashboardNavProps = {
@@ -8,6 +11,26 @@ type ManagerDashboardNavProps = {
 
 const ManagerDashboardNav: React.FC<ManagerDashboardNavProps> = ({ setVisibleMenu }) => {
     const [selectedOption, setSelectedOption] = useState('trucks');
+    
+    const navigate = useNavigate();
+    const location = useLocation();
+    useEffect(() => {
+        const checkUserRole = () => {
+            const user: User = location.state?.loggedUser;
+
+            console.log(`user = ${user}`)
+            if(user === undefined || user === null){
+                navigate('/');
+                return;
+            }
+            if (!user.is_manager){
+                navigate('/');
+                return;
+            }
+        };
+        checkUserRole();
+    }, []);
+    
 
     const handleChange = (newOption: string) => {
         setSelectedOption(newOption);

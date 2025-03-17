@@ -1,6 +1,14 @@
 import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
 
+
+export type User = {
+    first_name: string,
+    last_name: string,
+    email: string,
+    user_id: string,
+    is_manager: boolean
+}
 type LoginFormProps = {
     handleLoginAttempt: () => void;
 }
@@ -27,12 +35,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleLoginAttempt }) => {
             });
             if (data.user !== null && data.session !== null){
                 console.log(`successfully logged in ${data.user.user_metadata.first_name}`);
-                if (data.user.user_metadata.is_manager){
-                    navigate('/manage');
+                const { data: userData, error: userError } = await supabase.from("user").select('*').eq("user_id", data.user.id);
+                if (userData !== null){
+                    const loggedUser: User = userData[0] 
+
+                    if (loggedUser.is_manager){
+                        navigate('/manage', { state: {loggedUser} });
+                    }
+                    else{
+                        navigate('/cook');
+                    }
                 }
-                else{
-                    navigate('/cook');
+                else if (userError !== null){
+                    loginErrorNotification.innerText = "There was an error creating User object...";
                 }
+                
             }
             else if (error !== null){
                 console.log(`Error logging in that user: ${error.code}`);
