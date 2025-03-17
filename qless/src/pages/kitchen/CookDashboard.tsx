@@ -1,6 +1,7 @@
 import ListOrders from '../../components/kitchen/ListOrders';
 import '../../styles/kitchen/cookDashboard.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import supabase from '../../utils/supabase';
 
 
 /*Order Status:
@@ -13,12 +14,64 @@ import { useState } from 'react';
 export default function CookDashboard() {
     const [isShowing, setIsShowing] = useState("list");
     const [orderNum, setOrderNum] = useState(0);
+    const [orders, setOrders] = useState<Orders[]>([]);
+    const [truck, setTruck] = useState<String | undefined>("");
+
+    //get current user
+    useEffect(() => {
+        const fetchTruck = async () =>{
+            let userID: string | undefined="";
+            try{
+                //pull user id from supabase
+                const {data} = await supabase.auth.getUser();
+                userID =  data.user?.id;
+                if(userID === undefined)
+                    throw new Error("user ID undefined");
+            }
+            catch(err){
+                console.log("Unable to complete fetch user process...",err);
+            }
+        }
+    }, []);
+    console.log(supabase.auth.getUser());
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const { data } = await supabase.from('orders').select();
+                if (data) {
+                    let orderList: Orders[] = data.map(order => ({
+                        order_id: order.order_id,
+                        subtotal: order.subtotal,
+                        tax_rate: order.tax_rate,
+                        customer_phone_number: order.customer_phone_number,
+                        time_received: order.time_received,
+                        time_being_cooked: order.time_being_cooked,
+                        time_ready: order.time_ready,
+                        time_picked_up: order.time_picked_up,
+                        status_id: order.status_id,
+                        truck_id: order.truck_id
+                    }));
+                    orderList=orderList.filter(order => {});
+                    setOrders(orderList);
+                }
+                else {
+                    console.log("Failed to fetch orders.");
+                }
+            }
+            catch (err) {
+                console.log("Unable to complete fetch orders process...", err);
+            }
+        }
+        fetchOrders();
+    }, []);
+
 
     return (
         <div className="pageContainer">
             <div className='cookDashContainer'>
                 <div className="cookDashLeft">
-                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} />}
+                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} orders={orders} orderType={3} />}
                     {isShowing === "details" && <DetailsButton setIsShowing={setIsShowing} orderNum={orderNum} />}
                 </div>
                 <div className="cookDashRight">
@@ -41,6 +94,10 @@ export type Orders = {
     time_picked_up: Date | null,
     status_id: number,
     truck_id: number
+}
+
+type User = {
+    id: string
 }
 
 //converts an order status number to its coresponding string
