@@ -11,7 +11,14 @@
     justify-content: center;
     height: 100%;
     width: 100%;
-    border: 2px solid red;
+    border: 2px solid var(--border-color);
+}
+
+.errorNotificationText {
+    color: red;
+}
+.successNotificationText {
+    color: green;
 }
 
 footer{
