@@ -2,6 +2,7 @@ import ListOrders from '../../components/kitchen/ListOrders';
 import '../../styles/kitchen/cookDashboard.css';
 import { useState, useEffect } from 'react';
 import supabase from '../../utils/supabase';
+import { useNavigate } from 'react-router-dom';
 
 
 /*Order Status:
@@ -15,27 +16,20 @@ export default function CookDashboard() {
     const [isShowing, setIsShowing] = useState("list");
     const [orderNum, setOrderNum] = useState(0);
     const [orders, setOrders] = useState<Orders[]>([]);
-    const [truck, setTruck] = useState<String | undefined>("");
-
-    //get current user
-    useEffect(() => {
-        const fetchTruck = async () =>{
-            let userID: string | undefined="";
-            try{
-                //pull user id from supabase
-                const {data} = await supabase.auth.getUser();
-                userID =  data.user?.id;
-                if(userID === undefined)
-                    throw new Error("user ID undefined");
-            }
-            catch(err){
-                console.log("Unable to complete fetch user process...",err);
-            }
-        }
-    }, []);
+    const navigate = useNavigate();
     console.log(supabase.auth.getUser());
 
     useEffect(() => {
+
+        //verify that user is authenticated, if not reroute to login page
+        const checkAuth = async () => {
+            const { error } = await supabase.auth.getUser();
+            if (error) {
+                navigate("/");
+            }
+        }
+        checkAuth();
+        //pull orders from the database and store in "orders" state
         const fetchOrders = async () => {
             try {
                 const { data } = await supabase.from('orders').select();
@@ -52,7 +46,6 @@ export default function CookDashboard() {
                         status_id: order.status_id,
                         truck_id: order.truck_id
                     }));
-                    orderList=orderList.filter(order => {});
                     setOrders(orderList);
                 }
                 else {
@@ -84,7 +77,7 @@ export default function CookDashboard() {
 }
 
 export type Orders = {
-    order_id:number,
+    order_id: number,
     subtotal: number,
     tax_rate: number,
     customer_phone_number: string,
@@ -94,10 +87,6 @@ export type Orders = {
     time_picked_up: Date | null,
     status_id: number,
     truck_id: number
-}
-
-type User = {
-    id: string
 }
 
 //converts an order status number to its coresponding string

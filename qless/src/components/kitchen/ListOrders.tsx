@@ -37,9 +37,9 @@ export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: se
                 <button className='listButton' onClick={handleFinishClick(order.order_id)}>Finish</button>
             </div>
         </li>
-        
-
     );
+
+    
 
     //for when you click the "veiw details" button
     function handleDetailsClick(orderId: number) {
