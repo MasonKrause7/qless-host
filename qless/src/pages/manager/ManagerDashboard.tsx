@@ -18,6 +18,9 @@ function ManagerDashboard() {
             {visibleMenu === 'menus' && <MenuManagement />}
             {visibleMenu === 'employees' && <EmployeeManagement />}
 
+            <div>
+                <button>Add Food Truck</button>
+            </div>
 
         </div>
     )
