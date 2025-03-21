@@ -3,6 +3,7 @@ import '../../styles/kitchen/cookDashboard.css';
 import { useState, useEffect } from 'react';
 import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
+import ViewOrderDetails from '../../components/kitchen/ViewOrderDetails';
 
 
 /*Order Status:
@@ -15,12 +16,12 @@ import { useNavigate } from 'react-router-dom';
 export default function CookDashboard() {
     const [isShowing, setIsShowing] = useState("list");
     const [orderNum, setOrderNum] = useState(0);
-    const [orders, setOrders] = useState<Orders[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const navigate = useNavigate();
     console.log(supabase.auth.getUser());
 
+    //pulls orders from db and saves as array in the orders state
     useEffect(() => {
-
         //verify that user is authenticated, if not reroute to login page
         const checkAuth = async () => {
             const { error } = await supabase.auth.getUser();
@@ -34,7 +35,7 @@ export default function CookDashboard() {
             try {
                 const { data } = await supabase.from('orders').select();
                 if (data) {
-                    let orderList: Orders[] = data.map(order => ({
+                    let orderList: Order[] = data.map(order => ({
                         order_id: order.order_id,
                         subtotal: order.subtotal,
                         tax_rate: order.tax_rate,
@@ -43,9 +44,9 @@ export default function CookDashboard() {
                         time_being_cooked: order.time_being_cooked,
                         time_ready: order.time_ready,
                         time_picked_up: order.time_picked_up,
-                        status_id: order.status_id,
-                        truck_id: order.truck_id
+                        status_id: order.status_id
                     }));
+                    orderList.sort((a, b) => a.order_id - b.order_id);
                     setOrders(orderList);
                 }
                 else {
@@ -65,7 +66,7 @@ export default function CookDashboard() {
             <div className='cookDashContainer'>
                 <div className="cookDashLeft">
                     {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} orders={orders} orderType={3} />}
-                    {isShowing === "details" && <DetailsButton setIsShowing={setIsShowing} orderNum={orderNum} />}
+                    {isShowing === "details" && <ViewOrderDetails order={getOrderFromList({orders,orderNum})} />}
                 </div>
                 <div className="cookDashRight">
                     <p>Just For Testing</p>
@@ -76,7 +77,7 @@ export default function CookDashboard() {
     )
 }
 
-export type Orders = {
+export type Order = {
     order_id: number,
     subtotal: number,
     tax_rate: number,
@@ -85,8 +86,12 @@ export type Orders = {
     time_being_cooked: Date | null,
     time_ready: Date | null,
     time_picked_up: Date | null,
-    status_id: number,
-    truck_id: number
+    status_id: number
+}
+
+function getOrderFromList({ orders, orderNum}:{orders:Order[]; orderNum:number}) {
+    const item=orders.find(i => i.order_id===orderNum);
+    return item;
 }
 
 //converts an order status number to its coresponding string
@@ -109,15 +114,16 @@ export function getOrderStatus(id: number) {
     return status;
 }
 
-function DetailsButton({ setIsShowing, orderNum }:
-    { setIsShowing: React.Dispatch<React.SetStateAction<string>>; orderNum: number }) {
-    return (
-        <>
-            <h1>Details for: {orderNum}</h1>
-            <button onClick={() => setIsShowing("list")}>Back</button>
-        </>
-    );
-}
+//deprecated
+// function DetailsButton({ setIsShowing, orderNum }:
+//     { setIsShowing: React.Dispatch<React.SetStateAction<string>>; orderNum: number }) {
+//     return (
+//         <>
+//             <h1>Details for: {orderNum}</h1>
+//             <button onClick={() => setIsShowing("list")}>Back</button>
+//         </>
+//     );
+// }
 
 function FinishButton({ setIsShowing, orderNum }:
     { setIsShowing: React.Dispatch<React.SetStateAction<string>>; orderNum: number }) {

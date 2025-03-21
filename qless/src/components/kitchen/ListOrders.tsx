@@ -1,6 +1,6 @@
 import '../../styles/kitchen/cookDashboard.css';
 import { getOrderStatus } from '../../pages/kitchen/CookDashboard';
-import { Orders } from '../../pages/kitchen/CookDashboard';
+import { Order } from '../../pages/kitchen/CookDashboard';
 
 /*Order Status:
     1: Recieved
@@ -9,11 +9,13 @@ import { Orders } from '../../pages/kitchen/CookDashboard';
     4: Picked Up
 */
 
+
+
 export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum, orders: orders, orderType }:
     {
         setIsShowing: React.Dispatch<React.SetStateAction<string>>;
         setOrderNum: React.Dispatch<React.SetStateAction<number>>;
-        orders: Orders[];
+        orders: Order[];
         orderType: number;
     }) {
     
