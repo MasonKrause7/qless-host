@@ -30,7 +30,7 @@ export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: se
             <div className="listLeft">
                 <ul className='orderList'>
                     <li>Order Number: {order.order_id}</li>
-                    <li>Time Submitted: {new Date(order.time_received).toTimeString()}</li>
+                    <li>Time Submitted: {new Date(order.time_received).toLocaleTimeString()}</li>
                     <li>Status: {getOrderStatus(order.status_id)}</li>
                 </ul>
             </div>

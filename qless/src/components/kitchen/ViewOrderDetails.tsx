@@ -4,19 +4,18 @@ import supabase from "../../utils/supabase";
 import { useEffect, useState } from "react";
 
 type OrderDetail = {
-    order_product_id : number,
+    order_product_id: number,
     qty: number,
-    product: Product[]
-}    
-
-type Product= {
-    product_name:string,
-    price: number,
-    image_path: string
-
+    product: Product
 }
 
-export default function ViewOrderDetails({ order, setIsShowing : setIsShowing}:
+type Product = {
+    product_name: string,
+    price: number,
+    image_path: string
+}
+
+export default function ViewOrderDetails({ order, setIsShowing: setIsShowing }:
     {
         order: Order | undefined;
         setIsShowing: React.Dispatch<React.SetStateAction<string>>;
@@ -40,26 +39,41 @@ export default function ViewOrderDetails({ order, setIsShowing : setIsShowing}:
                         product_name,
                         price,
                         image_path
-                    )`).eq('order_id',order.order_id);
+                    )`).eq('order_id', order.order_id);
                 if (data) {
                     let orderDetailList: OrderDetail[] = data.map(detail => ({
                         order_product_id: detail.order_product_id,
                         qty: detail.qty,
-                        product: detail.product.map(productDetail => ({
-                            product_name: productDetail.product_name,
-                            price: productDetail.price,
-                            image_path: productDetail.image_path
-                        }))
+                        product: Array.isArray(detail.product) ? detail.product[0] : detail.product
                     }));
                     setOrderDetails(orderDetailList);
                 }
                 else console.log("Failed to fetch details");
             }
-            catch (err){
+            catch (err) {
                 console.log("Unable to complete fetch orders process...", err);
             }
         }
         fetchDetails();
     }, []);
-    return (<p></p>);
+
+    const listDetails = orderDetails.map(detail =>
+        <li className="listItem" key={detail.order_product_id}>
+            <div className="detailInfo">
+                <div className="detailImg">
+                    <img src={detail.product.image_path.includes("/image/path") ?"/src/tempimg/img.jpg":detail.product.image_path} alt="Product Image" />
+                </div>
+                <div className="details">
+                    <ol>
+                        <li>{detail.product.product_name}</li>
+                        <li>Quantity: {detail.qty}</li>
+                    </ol>
+                </div>
+                <div className="price">${(detail.product.price * detail.qty)}</div>
+            </div>
+            <button>Delete</button>
+        </li>
+    );
+
+    return <ol>{listDetails}</ol>;
 }

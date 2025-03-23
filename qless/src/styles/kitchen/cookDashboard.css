@@ -25,6 +25,7 @@ ol{
 .cookDashRight{
     order: 2;
     width: 200px;
+    max-height: 300px;
     border: 2px solid var(--border-color);
     margin: 10px;
     padding: 10px;
@@ -39,26 +40,26 @@ ol{
 }
 
 .listItem {
-    display: block; /* Make listItem block-level */
-    width: 100%; /* Ensure it takes up the full available width */
+    display: block; 
+    width: 100%; 
     margin: 10px;
     padding: 10px;
-    border: 2px solid var(--border-color); /* Border wraps the entire item */
-    box-sizing: border-box; /* Include padding and borders in the total width/height */
-    min-height: auto; /* Ensures a consistent height for each list item */
+    border: 2px solid var(--border-color); 
+    box-sizing: border-box; 
+    min-height: auto; 
 }
 
 .listLeft {
-    display: inline-block; /* Make the left section inline-block */
+    display: inline-block; 
     width: 60%; 
-    padding-right: 20px; /* Space between left and right content */
-    vertical-align: top; /* Align to the top of the container */
+    padding-right: 20px; 
+    vertical-align: top; 
 }
 
 .listRight {
-    display: inline-block; /* Make the right section inline-block */
+    display: inline-block; 
     width: 150px; 
-    vertical-align: center; /* Align to the top of the container */
+    vertical-align: center; 
     margin-left: auto;
 }
 
@@ -66,4 +67,9 @@ ol{
     margin: 2.5%;
     height: 25px;
     width: 150px;
+}
+
+.detailImg img{
+    width: 50px;
+    height: 50px;
 }

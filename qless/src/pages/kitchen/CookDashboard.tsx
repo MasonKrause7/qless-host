@@ -4,21 +4,16 @@ import { useState, useEffect } from 'react';
 import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
 import ViewOrderDetails from '../../components/kitchen/ViewOrderDetails';
+import ViewOrderDetailsSidebar from '../../components/kitchen/ViewOrderDetailsSidebar';
 
 
-/*Order Status:
-    1: Recieved
-    2: Being Cooked
-    3: Ready
-    4: Picked Up
-*/
+
 
 export default function CookDashboard() {
     const [isShowing, setIsShowing] = useState("list");
     const [orderNum, setOrderNum] = useState(0);
     const [orders, setOrders] = useState<Order[]>([]);
     const navigate = useNavigate();
-    console.log(supabase.auth.getUser());
 
     //pulls orders from db and saves as array in the orders state
     useEffect(() => {
@@ -69,7 +64,8 @@ export default function CookDashboard() {
                     {isShowing === "details" && <ViewOrderDetails order={getOrderFromList({orders,orderNum})} setIsShowing={setIsShowing}/>}
                 </div>
                 <div className="cookDashRight">
-                    <p>Just For Testing</p>
+                    {isShowing === "list" && <p>Just For Testing</p>}
+                    {isShowing === "details" && <ViewOrderDetailsSidebar order={getOrderFromList({orders,orderNum})} setIsShowing={setIsShowing}/>}
                 </div>
                 {isShowing === "finish" && <FinishButton setIsShowing={setIsShowing} orderNum={orderNum} />}
             </div>
@@ -94,6 +90,13 @@ function getOrderFromList({ orders, orderNum}:{orders:Order[]; orderNum:number})
     return item;
 }
 
+/*Order Status:
+    1: Recieved
+    2: Being Cooked
+    3: Ready
+    4: Picked Up
+*/
+
 //converts an order status number to its coresponding string
 export function getOrderStatus(id: number) {
     let status = "";
@@ -113,17 +116,6 @@ export function getOrderStatus(id: number) {
     }
     return status;
 }
-
-//deprecated
-// function DetailsButton({ setIsShowing, orderNum }:
-//     { setIsShowing: React.Dispatch<React.SetStateAction<string>>; orderNum: number }) {
-//     return (
-//         <>
-//             <h1>Details for: {orderNum}</h1>
-//             <button onClick={() => setIsShowing("list")}>Back</button>
-//         </>
-//     );
-// }
 
 function FinishButton({ setIsShowing, orderNum }:
     { setIsShowing: React.Dispatch<React.SetStateAction<string>>; orderNum: number }) {
