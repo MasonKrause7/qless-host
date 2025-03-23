@@ -65,8 +65,8 @@ export default function CookDashboard() {
         <div className="pageContainer">
             <div className='cookDashContainer'>
                 <div className="cookDashLeft">
-                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} orders={orders} orderType={3} />}
-                    {isShowing === "details" && <ViewOrderDetails order={getOrderFromList({orders,orderNum})} />}
+                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} orders={orders} orderStatus={3} />}
+                    {isShowing === "details" && <ViewOrderDetails order={getOrderFromList({orders,orderNum})} setIsShowing={setIsShowing}/>}
                 </div>
                 <div className="cookDashRight">
                     <p>Just For Testing</p>

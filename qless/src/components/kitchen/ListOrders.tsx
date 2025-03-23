@@ -11,12 +11,12 @@ import { Order } from '../../pages/kitchen/CookDashboard';
 
 
 
-export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum, orders: orders, orderType }:
+export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum, orders: orders, orderStatus: orderType }:
     {
         setIsShowing: React.Dispatch<React.SetStateAction<string>>;
         setOrderNum: React.Dispatch<React.SetStateAction<number>>;
         orders: Order[];
-        orderType: number;
+        orderStatus: number;
     }) {
     
     const orderList = orders.filter(order =>
