@@ -1,14 +1,8 @@
 import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
+import type { User } from '../../App';
 
 
-export type User = {
-    first_name: string,
-    last_name: string,
-    email: string,
-    user_id: string,
-    is_manager: boolean
-}
 type LoginFormProps = {
     handleLoginAttempt: () => void;
 }
@@ -40,7 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ handleLoginAttempt }) => {
                     const loggedUser: User = userData[0] 
 
                     if (loggedUser.is_manager){
-                        navigate('/manage', { state: {loggedUser} });
+                        navigate('/manage');
                     }
                     else{
                         navigate('/cook');

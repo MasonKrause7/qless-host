@@ -1,42 +1,48 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/manager/managerDashboard.css';
 import supabase from '../../utils/supabase';
+import type { ManagementSubDashProps, Truck } from '../../App';
 
-type Truck = {
-    truck_id: number,
-    truck_name: string,
-    image_path: string | null,
-    qr_code_path: string,
-    menu_id: number | null
-}
 
-function TruckManagement(){
+
+
+const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
+    const navigate = useNavigate();
+
     const [trucks, setTrucks] = useState<Truck[]>([]);
 
     useEffect(() => {
         const fetchTrucks = async () => {
-            try{
-                const { data } = await supabase.from('truck').select()
-                if (data){
+            if (manager === null){
+                console.log(`Cannot access the Truck Management dashboard without an authenticated manager account.\nReturning to login`);
+                navigate('/');
+            }
+            else{
+                const { data, error } = await supabase.from('truck').select().eq("manager_id", manager.user_id);
+                if (error) {
+                    console.log(`Error fetching trucks: ${error.code}.`);
+                }
+                else if (data){
                     const truckList: Truck[] = data.map(truck => ({
                         truck_id: truck.truck_id,
                         truck_name: truck.truck_name,
                         image_path: truck.image_path,
                         qr_code_path: truck.qr_code_path,
-                        menu_id: truck.menu_id
+                        menu_id: truck.menu_id,
+                        manager_id: truck.manager_id
                     }));
                     setTrucks(truckList);
                 }
                 else {
-                    console.log("Failed to fetch trucks.");
+                    console.log("Unexpected error while fetching trucks...");
                 }
-            }
-            catch (err) {
-                console.log("Unable to complete the fetch trucks process... ", err);
             }
         }
         fetchTrucks();
     }, []);
+
+
 
     
 

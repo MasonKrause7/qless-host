@@ -14,6 +14,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />}/>
       <Route path="*" element={<NotFound />} />
+      <Route path="/manage" element={<ManagerDashboard />} />
       <Route path="/cook" element={
         <StrictMode>
           <CookDashboard />
@@ -24,4 +25,43 @@ function App() {
   )
 }
 
-export default App
+export default App;
+
+export type ManagementSubDashProps = {
+  manager: User | null
+}
+export type User = {
+  first_name: string,
+  last_name: string,
+  email: string,
+  user_id: string,
+  is_manager: boolean
+}
+export type Employee = {
+  first_name: string,
+  last_name: string,
+  email: string,
+  employee_id: string,
+  truck_id: number,
+  truck_name: string,
+  date_assigned: string
+}
+export type Truck = {
+  truck_id: number,
+  truck_name: string,
+  image_path: string | null,
+  qr_code_path: string,
+  menu_id: number | null,
+  manager_id: number
+}
+export type Menu = {
+  menu_id: number,
+  menu_name: string,
+  manager_id: string
+}
+export type TruckAssignment = {
+  assignment_id: number,
+  truck_id: number,
+  employee_id: string,
+  date_assigned: string
+}

@@ -1,40 +1,22 @@
 import { useState, useEffect } from 'react';
 import '../../styles/manager/managerDashboard.css';
-import type { User } from '../login-signup/LoginForm';
-import { useNavigate, useLocation } from 'react-router-dom';
+
 
 
 
 type ManagerDashboardNavProps = {
-    setVisibleMenu: React.Dispatch<React.SetStateAction<string>>;
+    setVisibleDashboard: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const ManagerDashboardNav: React.FC<ManagerDashboardNavProps> = ({ setVisibleMenu }) => {
+const ManagerDashboardNav: React.FC<ManagerDashboardNavProps> = ({ setVisibleDashboard }) => {
     const [selectedOption, setSelectedOption] = useState('trucks');
-    
-    const navigate = useNavigate();
-    const location = useLocation();
+
     useEffect(() => {
-        const checkUserRole = () => {
-            const user: User = location.state?.loggedUser;
+        setVisibleDashboard(selectedOption);
+    }, [selectedOption])
 
-            console.log(`user = ${user}`)
-            if(user === undefined || user === null){
-                navigate('/');
-                return;
-            }
-            if (!user.is_manager){
-                navigate('/');
-                return;
-            }
-        };
-        checkUserRole();
-    }, []);
-    
-
-    const handleChange = (newOption: string) => {
+    const handleOptionChange = (newOption: string) => {
         setSelectedOption(newOption);
-        setVisibleMenu(newOption);
     }
 
     return (
@@ -44,19 +26,19 @@ const ManagerDashboardNav: React.FC<ManagerDashboardNavProps> = ({ setVisibleMen
                 <ul>
                     <li>
                         <button style={selectedOption === 'trucks' ? {backgroundColor: 'yellow'} : {backgroundColor: 'white'}}
-                                onClick={() => handleChange('trucks')}>
+                                onClick={() => handleOptionChange('trucks')}>
                             Trucks
                         </button>
                     </li>
                     <li>
                         <button style={selectedOption === 'menus' ? {backgroundColor: 'yellow'} : {backgroundColor: 'white'}}
-                                onClick={() => handleChange('menus')}>
+                                onClick={() => handleOptionChange('menus')}>
                             Menus
                         </button>
                     </li>
                     <li>
                         <button style={selectedOption === 'employees' ? {backgroundColor: 'yellow'} : {backgroundColor: 'white'}}
-                                onClick={() => handleChange('employees')}>
+                                onClick={() => handleOptionChange('employees')}>
                             Employees
                         </button>
                     </li>
