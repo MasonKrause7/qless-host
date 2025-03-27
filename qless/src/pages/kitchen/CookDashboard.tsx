@@ -7,8 +7,6 @@ import ViewOrderDetails from '../../components/kitchen/ViewOrderDetails';
 import ViewOrderDetailsSidebar from '../../components/kitchen/ViewOrderDetailsSidebar';
 
 
-
-
 export default function CookDashboard() {
     const [isShowing, setIsShowing] = useState("list");
     const [orderNum, setOrderNum] = useState(0);
@@ -60,12 +58,16 @@ export default function CookDashboard() {
         <div className="pageContainer">
             <div className='cookDashContainer'>
                 <div className="cookDashLeft">
-                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing} setOrderNum={setOrderNum} orders={orders} orderStatus={3} />}
-                    {isShowing === "details" && <ViewOrderDetails order={getOrderFromList({orders,orderNum})} setIsShowing={setIsShowing}/>}
+                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing}
+                        setOrderNum={setOrderNum} orders={orders} orderStatus={3} />}
+                    {isShowing === "details" && <ViewOrderDetails
+                        order={getOrderFromList({ orders, orderNum })} setIsShowing={setIsShowing} />}
                 </div>
                 <div className="cookDashRight">
                     {isShowing === "list" && <p>Just For Testing</p>}
-                    {isShowing === "details" && <ViewOrderDetailsSidebar order={getOrderFromList({orders,orderNum})} setIsShowing={setIsShowing}/>}
+                    {isShowing === "details" && <ViewOrderDetailsSidebar orders={orders}
+                        order={getOrderFromList({ orders, orderNum })} setIsShowing={setIsShowing}
+                        setOrderNum={setOrderNum} />}
                 </div>
                 {isShowing === "finish" && <FinishButton setIsShowing={setIsShowing} orderNum={orderNum} />}
             </div>
@@ -85,8 +87,8 @@ export type Order = {
     status_id: number
 }
 
-function getOrderFromList({ orders, orderNum}:{orders:Order[]; orderNum:number}) {
-    const item=orders.find(i => i.order_id===orderNum);
+function getOrderFromList({ orders, orderNum }: { orders: Order[]; orderNum: number }) {
+    const item = orders.find(i => i.order_id === orderNum);
     return item;
 }
 

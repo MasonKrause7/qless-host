@@ -1,24 +1,27 @@
 import "../../styles/kitchen/cookDashboard.css";
 import { Order } from "../../pages/kitchen/CookDashboard";
 import { getOrderStatus } from "../../pages/kitchen/CookDashboard";
+import { useState, useEffect } from "react";
 
-export default function ViewOrderDetailsSidebar({ order, setIsShowing: setIsShowing }:
+export default function ViewOrderDetailsSidebar({ orders, order: currentOrder, setIsShowing: setIsShowing, setOrderNum: setOrderNum }:
     {
+        orders: Order[];
         order: Order | undefined;
         setIsShowing: React.Dispatch<React.SetStateAction<string>>;
+        setOrderNum: React.Dispatch<React.SetStateAction<number>>;
     }) {
 
-    if (order === undefined) {
+    if (currentOrder === undefined) {
         console.log("Invalid order");
         setIsShowing("list");
         return;
     }
 
     //handles "View All Orders" button
-    function handleViewAllButton(){
-        const click = () =>{
+    function handleViewAllButton() {
+        const click = () => {
             setIsShowing("list");
-        } 
+        }
         return click;
     }
 
@@ -26,16 +29,16 @@ export default function ViewOrderDetailsSidebar({ order, setIsShowing: setIsShow
         <>
             <div className="details">
                 <ol>
-                    <li>Order Number: {order.order_id}</li>
-                    <li>Order Status: {getOrderStatus(order.status_id)}</li>
-                    <li>Last Update: {lastUpdateTime(order)}</li>
-                    <li>Phone Number: {formatPhoneNumber(order)}</li>
+                    <li>Order Number: {currentOrder.order_id}</li>
+                    <li>Order Status: {getOrderStatus(currentOrder.status_id)}</li>
+                    <li>Last Update: {lastUpdateTime(currentOrder)}</li>
+                    <li>Phone Number: {formatPhoneNumber(currentOrder)}</li>
                 </ol>
             </div>
             <div className="buttons">
                 <button>Change Status</button>
                 <div className="prevNextButton">
-                    <button>Prev</button>
+                    <PrevDetailsPage orders={orders} currentOrder={currentOrder} setOrderNum={setOrderNum} />
                     <button>Next</button>
                 </div>
                 <button onClick={handleViewAllButton()}>View All Orders</button>
@@ -75,5 +78,38 @@ function lastUpdateTime(order: Order): string {
 
 function formatPhoneNumber(order: Order): string {
     const phone = order.customer_phone_number;
-    return `(${phone.slice(0,3)})-${phone.slice(3,6)}-${phone.slice(6)}`;
+    return `(${phone.slice(0, 3)})-${phone.slice(3, 6)}-${phone.slice(6)}`;
+}
+
+//handle the previous button click
+function PrevDetailsPage({ orders, currentOrder, setOrderNum }:
+    {
+        orders: Order[];
+        currentOrder: Order;
+        setOrderNum: React.Dispatch<React.SetStateAction<number>>
+    }) {
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const curOrderIndex: number=orders.indexOf(currentOrder);
+    
+    let prevOrder: Order | null = null;
+
+    useEffect(() => {
+        if (curOrderIndex > 0) {
+            setIsButtonDisabled(false);
+        } else {
+            setIsButtonDisabled(true);
+        }
+    }, [curOrderIndex]);  // Runs only when curOrderIndex changes
+
+    if (curOrderIndex > 0) {
+        prevOrder = orders[curOrderIndex - 1];
+    }
+
+    const click = () => {
+        if (prevOrder) {
+            setOrderNum(prevOrder.order_id);
+        }
+    };
+
+    return <button onClick={click} disabled={isButtonDisabled}>Prev</button>;
 }
