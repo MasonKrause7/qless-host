@@ -47,6 +47,8 @@ export default function ViewOrderDetails({ order, setIsShowing: setIsShowing }:
                         product: Array.isArray(detail.product) ? detail.product[0] : detail.product
                     }));
                     setOrderDetails(orderDetailList);
+                    console.log("successfully pulled details");//debug
+                    console.log("data",data);//debug
                 }
                 else console.log("Failed to fetch details");
             }
@@ -58,6 +60,7 @@ export default function ViewOrderDetails({ order, setIsShowing: setIsShowing }:
     }, []);
 
     const listDetails = orderDetails.map(detail =>
+    
         <li className="listItem" key={detail.order_product_id}>
             <div className="detailInfo">
                 <div className="detailImg">
@@ -73,7 +76,11 @@ export default function ViewOrderDetails({ order, setIsShowing: setIsShowing }:
             </div>
             <button>Delete</button>
         </li>
+        
     );
+
+    console.log("orderDetails",orderDetails);//debug
 
     return <ol>{listDetails}</ol>;
 }
+
