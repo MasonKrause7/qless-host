@@ -69,3 +69,27 @@ export type TruckAssignment = {
   employee_id: string,
   date_assigned: string
 }
+
+export type Order = {
+  order_id: number,
+  subtotal: number,
+  tax_rate: number,
+  customer_phone_number: string,
+  time_received: Date,
+  time_being_cooked: Date | null,
+  time_ready: Date | null,
+  time_picked_up: Date | null,
+  status_id: number
+}
+
+export type OrderDetail = {
+  order_product_id: number,
+  qty: number,
+  product: Product
+}
+
+export type Product = {
+  product_name: string,
+  price: number,
+  image_path: string
+}

@@ -1,19 +1,9 @@
-import { Order } from "../../pages/kitchen/CookDashboard";
+import { Order, OrderDetail } from "../../App";
 import "../../styles/kitchen/cookDashboard.css";
 import supabase from "../../utils/supabase";
 import { useEffect, useState } from "react";
 
-type OrderDetail = {
-    order_product_id: number,
-    qty: number,
-    product: Product
-}
 
-type Product = {
-    product_name: string,
-    price: number,
-    image_path: string
-}
 
 export default function ViewOrderDetails({ order, setIsShowing: setIsShowing }:
     {

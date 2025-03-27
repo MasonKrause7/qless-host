@@ -1,5 +1,5 @@
 import "../../styles/kitchen/cookDashboard.css";
-import { Order } from "../../pages/kitchen/CookDashboard";
+import { Order } from "../../App";
 import { getOrderStatus } from "../../pages/kitchen/CookDashboard";
 import { useState, useEffect } from "react";
 

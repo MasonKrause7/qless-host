@@ -1,6 +1,6 @@
 import '../../styles/kitchen/cookDashboard.css';
 import { getOrderStatus } from '../../pages/kitchen/CookDashboard';
-import { Order } from '../../pages/kitchen/CookDashboard';
+import { Order } from '../../App';
 
 /*Order Status:
     1: Recieved

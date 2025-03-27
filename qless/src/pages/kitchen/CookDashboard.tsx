@@ -5,6 +5,7 @@ import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
 import ViewOrderDetails from '../../components/kitchen/ViewOrderDetails';
 import ViewOrderDetailsSidebar from '../../components/kitchen/ViewOrderDetailsSidebar';
+import { Order } from '../../App';
 
 
 export default function CookDashboard() {
@@ -75,17 +76,7 @@ export default function CookDashboard() {
     )
 }
 
-export type Order = {
-    order_id: number,
-    subtotal: number,
-    tax_rate: number,
-    customer_phone_number: string,
-    time_received: Date,
-    time_being_cooked: Date | null,
-    time_ready: Date | null,
-    time_picked_up: Date | null,
-    status_id: number
-}
+
 
 function getOrderFromList({ orders, orderNum }: { orders: Order[]; orderNum: number }) {
     const item = orders.find(i => i.order_id === orderNum);
