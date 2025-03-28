@@ -25,7 +25,7 @@ ol{
 .cookDashRight{
     order: 2;
     width: 250px;
-    max-height: 300px;
+    height: 300px;
     border: 2px solid var(--border-color);
     margin: 10px;
     padding: 10px;

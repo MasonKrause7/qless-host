@@ -1,29 +1,38 @@
 import "../../styles/kitchen/cookDashboard.css";
 import { Order, OrderDetail } from "../../App";
-import { getOrderStatus } from "../../pages/kitchen/CookDashboard";
+import { getOrderStatus, UpdateOrderStatusButton } from "../../pages/kitchen/CookDashboard";
 import { useState, useEffect } from "react";
 
 export default function ViewOrderDetails({
     orders,
     orderStatus,
-    order: currentOrder,
+    currentOrder,
     orderDetails,
     setIsShowing: setIsShowing,
-    setOrderNum: setOrderNum }:
-    {
-        orders: Order[];
-        orderStatus: number;
-        order: Order | undefined;
-        orderDetails: OrderDetail[];
-        setIsShowing: React.Dispatch<React.SetStateAction<string>>;
-        setOrderNum: React.Dispatch<React.SetStateAction<number>>;
-    }) {
+    setOrderNum: setOrderNum
+}: {
+    orders: Order[];
+    orderStatus: number;
+    currentOrder: Order | undefined;
+    orderDetails: OrderDetail[];
+    setIsShowing: React.Dispatch<React.SetStateAction<string>>;
+    setOrderNum: React.Dispatch<React.SetStateAction<number>>;
+}) {
 
     if (currentOrder === undefined) {
         console.log("Invalid order");
         setIsShowing("list");
         return;
     }
+
+    //filters the orders
+    const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+    useEffect(() => {
+        setFilteredOrders(orders.filter(order =>
+            order.status_id <= orderStatus
+        ));
+    }, [currentOrder]);
+
 
     //maps order details
     const listDetails = orderDetails.map(detail =>
@@ -68,8 +77,12 @@ export default function ViewOrderDetails({
                         <li>Phone Number: {formatPhoneNumber(currentOrder)}</li>
                     </ol>
                 </div>
-                <div className="buttons">
-                    <button>Change Status</button>
+                <div className="detailsButtons">
+                    <UpdateOrderStatusButton
+                        className="bigDetailsButton"
+                        currentOrder={currentOrder}
+                        setOrderNum={setOrderNum}
+                    />
                     <div className="prevNextButton">
                         <PrevDetailsPageButton
                             orders={orders}
@@ -77,13 +90,12 @@ export default function ViewOrderDetails({
                             setOrderNum={setOrderNum}
                         />
                         <NextDetailsPageButton
-                            orders={orders}
+                            filteredOrders={filteredOrders}
                             currentOrder={currentOrder}
                             setOrderNum={setOrderNum}
-                            orderStatus={orderStatus}
                         />
                     </div>
-                    <button onClick={handleViewAllButton()}>View All Orders</button>
+                    <button className="bigDetailsButton" onClick={handleViewAllButton()}>View All Orders</button>
                 </div>
             </div>
         </>
@@ -158,30 +170,28 @@ function PrevDetailsPageButton({ orders, currentOrder, setOrderNum }:
 }
 
 //handle the next button click
-function NextDetailsPageButton({ orders, currentOrder, setOrderNum, orderStatus }:
+function NextDetailsPageButton({ filteredOrders, currentOrder, setOrderNum }:
     {
-        orders: Order[];
+        filteredOrders: Order[];
         currentOrder: Order;
         setOrderNum: React.Dispatch<React.SetStateAction<number>>;
-        orderStatus: number;
     }) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-    const curOrderIndex: number = orders.indexOf(currentOrder);
+    const curOrderIndex: number = filteredOrders.indexOf(currentOrder);
 
     let nextOrder: Order | null = null;
 
     useEffect(() => {
-        if (curOrderIndex < orders.length - 1 &&
-            orders[curOrderIndex + 1].order_id <= orderStatus) {
+        if (curOrderIndex < filteredOrders.length - 1) {
             setIsButtonDisabled(false);
         } else {
             setIsButtonDisabled(true);
         }
     }, [curOrderIndex]);  // Runs only when curOrderIndex changes
 
-    if (curOrderIndex < orders.length) {
-        nextOrder = orders[curOrderIndex + 1];
+    if (curOrderIndex < filteredOrders.length) {
+        nextOrder = filteredOrders[curOrderIndex + 1];
     }
 
     const click = () => {
@@ -192,3 +202,4 @@ function NextDetailsPageButton({ orders, currentOrder, setOrderNum, orderStatus 
 
     return <button onClick={click} disabled={isButtonDisabled}>Next</button>;
 }
+
