@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
 import ViewOrderDetails from '../../components/kitchen/ViewOrderDetails';
-import ViewOrderDetailsSidebar from '../../components/kitchen/ViewOrderDetailsSidebar';
-import { Order } from '../../App';
+import { Order, OrderDetail } from '../../App';
 
 
 export default function CookDashboard() {
     const [isShowing, setIsShowing] = useState("list");
     const [orderNum, setOrderNum] = useState(0);
     const [orders, setOrders] = useState<Order[]>([]);
+    const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([]);
     const navigate = useNavigate();
 
     //pulls orders from db and saves as array in the orders state
@@ -54,28 +54,67 @@ export default function CookDashboard() {
         fetchOrders();
     }, []);
 
+    //pull order details from db whenever order num changes
+    useEffect(() => {
+        const fetchDetails = async () => {
+            if (orderNum !== 0) {
+                try {
+
+                    const { data } = await supabase.from('order_product').select(`
+                    order_product_id,
+                    qty,
+                    product(
+                        product_name,
+                        price,
+                        image_path
+                    )`).eq('order_id', orderNum);
+                    if (data) {
+                        setOrderDetails(
+                            data.map(detail => ({
+                                order_product_id: detail.order_product_id,
+                                qty: detail.qty,
+                                product: Array.isArray(detail.product) ? detail.product[0] : detail.product
+                            }))
+                        );
+                    }
+                    else console.log("Failed to fetch details");
+                }
+                catch (err) {
+                    console.log("Unable to complete fetch orders process...", err);
+                }
+            }
+        }
+        fetchDetails();
+    }, [orderNum]);
+
 
     return (
         <div className="pageContainer">
             <div className='cookDashContainer'>
-                <div className="cookDashLeft">
-                    {isShowing === "list" && <ListOrders setIsShowing={setIsShowing}
-                        setOrderNum={setOrderNum} orders={orders} orderStatus={3} />}
-                    {isShowing === "details" && <ViewOrderDetails
-                        order={getOrderFromList({ orders, orderNum })} setIsShowing={setIsShowing} />}
-                </div>
-                <div className="cookDashRight">
-                    {isShowing === "list" && <p>Just For Testing</p>}
-                    {isShowing === "details" && <ViewOrderDetailsSidebar orders={orders}
-                        order={getOrderFromList({ orders, orderNum })} setIsShowing={setIsShowing}
-                        setOrderNum={setOrderNum} />}
-                </div>
-                {isShowing === "finish" && <FinishButton setIsShowing={setIsShowing} orderNum={orderNum} />}
+                {isShowing === "list" && <ListOrders
+                    setIsShowing={setIsShowing}
+                    setOrderNum={setOrderNum}
+                    orders={orders}
+                    orderStatus={3}
+                />}
+
+                {isShowing === "details" && <ViewOrderDetails
+                    orders={orders}
+                    orderStatus={3}
+                    order={getOrderFromList({ orders, orderNum })}
+                    orderDetails={orderDetails}
+                    setIsShowing={setIsShowing}
+                    setOrderNum={setOrderNum}
+                />}
+
+                {isShowing === "finish" && <FinishButton
+                    setIsShowing={setIsShowing}
+                    orderNum={orderNum}
+                />}
             </div>
         </div>
     )
 }
-
 
 
 function getOrderFromList({ orders, orderNum }: { orders: Order[]; orderNum: number }) {

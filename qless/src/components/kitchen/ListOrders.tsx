@@ -11,21 +11,21 @@ import { Order } from '../../App';
 
 
 
-export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum, orders: orders, orderStatus: orderType }:
+export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: setOrderNum, orders: orders, orderStatus }:
     {
         setIsShowing: React.Dispatch<React.SetStateAction<string>>;
         setOrderNum: React.Dispatch<React.SetStateAction<number>>;
         orders: Order[];
         orderStatus: number;
     }) {
-    
+
     const orderList = orders.filter(order =>
-        order.status_id <= orderType
+        order.status_id <= orderStatus
     );
 
     //map each order
     const listItems = orderList.map(order =>
-        
+
         <li className='listItem' key={order.order_id}>
             <div className="listLeft">
                 <ul className='orderList'>
@@ -41,7 +41,7 @@ export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: se
         </li>
     );
 
-    
+
 
     //for when you click the "veiw details" button
     function handleDetailsClick(orderId: number) {
@@ -62,7 +62,16 @@ export default function ListOrders({ setIsShowing: setIsShowing, setOrderNum: se
     }
 
     //return list
-    return <ol>{listItems}</ol>
+    return (
+        <>
+            <div className="cookDashLeft">
+                <ol>{listItems}</ol>
+            </div>
+            <div className="cookDashRight">
+                <p>Just For Testing</p>
+            </div>
+        </>
+    );
 }
 
 
