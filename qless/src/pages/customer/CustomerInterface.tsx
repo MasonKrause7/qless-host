@@ -12,7 +12,7 @@ function CustomerInterface() {
     const handleSubmit = () => {
         const cleanedNumber = phoneNumber.replace(/\D/g, '');
         if (cleanedNumber.length === 10) {
-            navigate('/order-menu');
+            navigate('/order-menu',{ state:{cleanedNumber:cleanedNumber}});
         } else {
             alert("Please enter a valid 10-digit phone number.");
         }
