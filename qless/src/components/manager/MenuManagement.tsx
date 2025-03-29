@@ -37,7 +37,7 @@ const MenuManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
 
     return (
         <div>
-            <h1>Manage Menus</h1>
+            <h2>Manage Menus</h2>
             <ul>
                 {menus.map(menu => (
                     <li key={menu.menu_id}>

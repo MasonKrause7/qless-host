@@ -3,6 +3,35 @@
 }
 * {
     box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Kanit', sans-serif;
+}
+.queuelessBrandBar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border: 1px solid;
+    background-color: black;
+}
+.logoContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.moto{
+    margin-top: 10px;
+    font-family: "Kanit", sans-serif;
+    color: white;
+}
+.queueless{
+    color: white;
+    margin-left: 25px;
+    font-size: 3em;
+    font-family: "Kanit", sans-serif;
+    flex: 1;
 }
 .pageContainer {
     display: flex;
@@ -14,14 +43,19 @@
     border: 2px solid var(--border-color);
 }
 
-.errorNotificationText {
+.errorMessageText {
     color: red;
 }
-.successNotificationText {
-    color: green;
-}
+
 
 footer{
     text-align: center;
     margin: 10px;
 }
+
+
+
+
+
+
+  

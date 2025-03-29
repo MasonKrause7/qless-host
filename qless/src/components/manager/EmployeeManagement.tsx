@@ -82,7 +82,7 @@ const EmployeeManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
 
     return (
         <div>
-            <h1>Employee Management</h1>
+            <h2>Employee Management</h2>
             <div>
                 <ul>
                     { employees.map(employee => (

@@ -1,8 +1,102 @@
 .managementContainer{
     display: flex;
-    border: 1px solid var(--border-color);
+    flex-wrap: wrap;
 }
 
-.managerDashboardNav {
-    
+
+.managerDashboardNav ul{
+    display: flex;
+    list-style: none;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: red;
+}
+.managerDashboardNav ul li{
+    padding: 10px;
+    width: 30%;
+}
+
+.managerDashboardNavButton{
+    color: white;
+    padding: 20px;
+    width: 100%;
+    background-color: black;
+    border: 0px;
+}
+.managerDashboardNavButtonSelected{
+    background-color: white;
+    padding:20px;
+    width: 100%;
+    border: 0px;
+}
+.managerDashboardNav ul li button:hover {
+    cursor: pointer;
+    background-color: #ccc;
+    border: 2px solid black;
+    color: black;
+    border: 0px;
+}
+.welcomeMessage{
+    margin-top: 10px;
+}
+.strong{
+    color: red;
+}
+.pageTitle{
+    margin: 10px;
+}
+
+.truckCards{
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+}
+.lastTruckCard{
+    border: 1px dotted black;
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+    padding: 10px;
+    width: 200px;
+    height: 200px;
+    align-items: center;
+    justify-content: center;
+}
+
+.cardContainer{
+    border: 1px dotted black;
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+    padding: 10px;
+    width: 200px;
+    height: 200px;
+    align-items: center;
+}
+.cardImgContainer{
+    height: 150px;
+    border: 2px solid red;
+    width: 150px;
+    border-radius: 50%;
+}
+.cardContainer button{
+    width: 50%;
+}
+
+.createForm{
+    display: flex;
+    flex-direction: column;
+}
+.createFormInputGroup{
+    margin: 10px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+.createFormInput{
+    width: 50%;
+}
+
+.imagePreview{
+    width: 150px;
 }

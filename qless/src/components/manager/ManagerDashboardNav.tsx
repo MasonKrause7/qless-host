@@ -25,19 +25,19 @@ const ManagerDashboardNav: React.FC<ManagerDashboardNavProps> = ({ setVisibleDas
             <nav className='managerDashboardNav'>
                 <ul>
                     <li>
-                        <button style={selectedOption === 'trucks' ? {backgroundColor: 'yellow'} : {backgroundColor: 'white'}}
+                        <button className={selectedOption === 'trucks' ? 'managerDashboardNavButtonSelected' : 'managerDashboardNavButton'}
                                 onClick={() => handleOptionChange('trucks')}>
                             Trucks
                         </button>
                     </li>
                     <li>
-                        <button style={selectedOption === 'menus' ? {backgroundColor: 'yellow'} : {backgroundColor: 'white'}}
+                        <button className={selectedOption === 'menus' ? 'managerDashboardNavButtonSelected' : 'managerDashboardNavButton'}
                                 onClick={() => handleOptionChange('menus')}>
                             Menus
                         </button>
                     </li>
                     <li>
-                        <button style={selectedOption === 'employees' ? {backgroundColor: 'yellow'} : {backgroundColor: 'white'}}
+                        <button className={selectedOption === 'employees' ? 'managerDashboardNavButtonSelected' : 'managerDashboardNavButton'}
                                 onClick={() => handleOptionChange('employees')}>
                             Employees
                         </button>

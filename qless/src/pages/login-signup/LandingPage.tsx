@@ -1,27 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import SignUpForm from '../../components/login-signup/SignUpForm';
 import LoginForm from '../../components/login-signup/LoginForm';
 import '../../styles/landing.css';
+import ErrorMessage from '../../components/commonUI/ErrorMessage';
 
 
 
 
 function LandingPage() {
+  
     const [loginShowing, setLoginShowing] = useState<boolean>(true);
-
-    const handleSignUpSuccess = () => {
-        setLoginShowing(true);
-        const signUpSuccessNotification = document.getElementById("signUpSuccessNotification");
-        if (signUpSuccessNotification !== null){
-            signUpSuccessNotification.innerText = "Successfully signed up. Use your new credentials to login.";
-        }
-    }
-    const handleLoginAttempt = () => {
-        const signUpSuccessNotification = document.getElementById('signUpSuccessNotification');
-        if (signUpSuccessNotification !== null){
-            signUpSuccessNotification.innerText = "";
-        }
-    }
+    
 
 
     return (
@@ -30,10 +20,10 @@ function LandingPage() {
                 <button className='tab' onClick={() => setLoginShowing(true)}>Login</button>
                 <button className='tab' onClick={() => setLoginShowing(false)}>Sign Up</button>
             </div>
-            <p id='signUpSuccessNotification' className='successNotificationText'></p>
+
             <div className='formContainer'> 
-                {loginShowing && <LoginForm handleLoginAttempt={handleLoginAttempt} />}
-                {!loginShowing && <SignUpForm setLoginShowing={handleSignUpSuccess} />} 
+                {loginShowing && <LoginForm />}
+                {!loginShowing && <SignUpForm setLoginShowing={setLoginShowing} />} 
             </div>
         </div>
     )

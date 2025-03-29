@@ -5,6 +5,7 @@ import CookDashboard from './pages/kitchen/CookDashboard';
 import ManagerDashboard from './pages/manager/ManagerDashboard';
 import CustomerInterface from './pages/customer/CustomerInterface';
 import OrderMenu from './pages/customer/OrderMenu';
+import TruckView from './pages/manager/TruckView';
 import './styles/global.css';
 import { StrictMode } from 'react';
 
@@ -17,6 +18,7 @@ function App() {
       <Route path="/" element={<LandingPage />}/>
       <Route path="*" element={<NotFound />} />
       <Route path="/manage" element={<ManagerDashboard />} />
+      <Route path="/manage/truck" element={<TruckView  />} />
       <Route path="/cook" element={
         <StrictMode>
           <CookDashboard />
@@ -32,7 +34,7 @@ function App() {
 export default App;
 
 export type ManagementSubDashProps = {
-  manager: User | null
+  manager: User
 }
 export type User = {
   first_name: string,
@@ -53,7 +55,7 @@ export type Employee = {
 export type Truck = {
   truck_id: number,
   truck_name: string,
-  image_path: string | null,
+  image_path: string,
   qr_code_path: string,
   menu_id: number | null,
   manager_id: number

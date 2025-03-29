@@ -1,21 +1,27 @@
 import { useState } from 'react';
-import supabase from '../../utils/supabase';
+import { signUp } from '../../utils/supabaseService';
+import ErrorMessage from '../commonUI/ErrorMessage';
+import { useNavigate } from 'react-router-dom';
+
 
 
 type SignUpFormProps = {
-    setLoginShowing: () => void;
+    setLoginShowing: React.Dispatch<boolean>;
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ setLoginShowing }) => {
+    const navigate = useNavigate();
+
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessageVisible, setErrorMessageVisible] = useState(false);
     
 
 
     const handleSignUpSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const notificationText = document.getElementById('signUpErrorNotification');
-        if (notificationText === null) return;
+        setErrorMessageVisible(false);
 
         const formData = new FormData(event.currentTarget);
         const email = formData.get("emailSignUp") as string;
@@ -25,49 +31,32 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setLoginShowing }) => {
         
 
         if (password !== confirmPassword){
-            notificationText.innerText = 'The password and password confirmation do not match. Please double check your entries and try again.';
+            setErrorMessage("Passwords do not match.");
+            setErrorMessageVisible(true);
+            return;
+        }
+        else if (!firstName || firstName.trim() === ""){
+            setErrorMessage("Invalid first name input");
+            setErrorMessageVisible(true);
+            return;
+        }
+        else if (!lastName || lastName.trim() === ""){
+            setErrorMessage("Invalid last name input");
+            setErrorMessageVisible(true);
+            return;
+        }
+        else if(!email || email.trim() === "" || email.length < 7){
+            setErrorMessage("Invalid last name input");
+            setErrorMessageVisible(true);
             return;
         }
         //HANDLE THE REMAINING INPUT FIELDS VALIDATION (ie no name entered, weird characters in name)
         
-        try{
-            const { data, error } = await supabase.auth.signUp(
-                {
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            first_name: firstName,
-                            last_name: lastName,
-                            is_manager: true
-                        }
-                    }
-                }
-            );
-            if (data.user !== null) {
-                console.log('Successfully signed up');
-                setLoginShowing(); 
-                
-            }
-            else if (error) {
-                console.log("Error occured while attempting sign up.");
-                console.log("Error: ", error.code, error.message);
-                //ADD IN SPECIFIC ERROR HANDLING, DISPLAY A NOTIFICATION BASED ON THE SPECIFIC ERROR (invalid fields, already registered, etc...)
-                if (error.code === "user_already_exists"){
-                    notificationText.innerText = "An account is already registered with that email. Try logging in instead.";
-                }
-                else{
-                    notificationText.innerText = "Invalid signup, check all fields and try again.";
-                }
-                
-            }
-            else{
-                console.log("An unexpected error occured during the sign up process.");
-            }
+        const userData = await signUp(email, password, firstName, lastName);
+        if (userData){
+            setLoginShowing(true);
         }
-        catch (err){
-            console.log("Unable to complete sign up request... ", err);
-        }
+        
     }
 
     return <>
@@ -81,7 +70,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setLoginShowing }) => {
                 <input id='confirmPassword' name='confirmPassword' type="password" placeholder="Confirm Password" />
                 <button type="submit">Sign Up</button>
             </form>
-            <p id='signUpErrorNotification' className='errorNotificationText'></p>
+            <p>Already have an account? <a>Login</a> instead</p>
+            {errorMessageVisible && <ErrorMessage message={errorMessage} />}
         </div>
     </>
 }
