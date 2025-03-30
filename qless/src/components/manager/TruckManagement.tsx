@@ -1,23 +1,26 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../../styles/manager/managerDashboard.css';
-import { getTrucks, uploadTruckImage, postTruck } from '../../utils/supabaseService';
-import type { ManagementSubDashProps, Truck, InsertTruck } from '../../App';
+import { getTrucks, getMenus, uploadTruckImage, postTruck, updateTruck, getTruckById } from '../../utils/supabaseService';
+import type { ManagementSubDashProps, Truck, InsertTruckDto, Menu } from '../../App';
 import ErrorMessage from '../commonUI/ErrorMessage';
 import TruckCard from './TruckCard';
-import QRCodeGenerator from '../../utils/QRCodeGenerator';
+import { generateAndUploadQRCode } from '../../utils/QRCodeGenerator';
+
 
 
 
 
 const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
-    const navigate = useNavigate();
 
-    const [trucks, setTrucks] = useState<Truck[]>([]);
+    const [trucks, setTrucks] = useState<Truck[] | null>(null);
+    const [menus, setMenus] = useState<Menu[] | null>(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [creatingTruck, setCreatingTruck] = useState(false);
     const [newTruckImgFile, setNewTruckImgFile] = useState<File | null>(null);
     const [previewURL, setPreviewURL] = useState<string | null>(null);
+    const [selectedMenuId, setSelectedMenuId] = useState<number | null>(null);
+
+
 
     useEffect(() => {
         const fetchTrucks = async () => {
@@ -31,7 +34,20 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
             }
         }
         fetchTrucks();
-    }, []);
+    }, [manager.user_id]);
+    useEffect(() => {
+        const fetchMenus = async () => {
+            setErrorMessage("");
+            const menuList: Menu[] | null = await getMenus(manager.user_id);
+            if (!menuList){
+                setErrorMessage("Unable to fetch truck list... wait a few moments and then try refreshing.");
+            }
+            else{
+                setMenus(menuList);
+            }
+        }
+        fetchMenus();
+    }, [manager.user_id]);
 
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +87,7 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
             setErrorMessage("Please enter a truck name.");
             return;
         }
-        const insertTruck: InsertTruck = {
+        const insertTruck: InsertTruckDto = {
             /*  truck_id: number,
                  truck_name: string,
                  image_path: string,
@@ -79,7 +95,8 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
                  menu_id: number | null,
                  manager_id: string */
              truck_name: truckName,
-             manager_id: manager.user_id
+             manager_id: manager.user_id,
+             menu_id: selectedMenuId
          }
          const newTruck: Truck | null = await postTruck(insertTruck);
          if (!newTruck) {
@@ -88,24 +105,46 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
          }
 
         //truck image can be null, if it is then we shouldnt include it
-        let imgUrl: string | null = "";
+        let potentialImgUrl: string | null = "";
         if(newTruckImgFile){
-            imgUrl = await uploadTruckImage(newTruckImgFile, manager.user_id);
-            if (!imgUrl){
-                setErrorMessage("There was an error uploading your image.");
+            potentialImgUrl = await uploadTruckImage(newTruckImgFile, manager.user_id);
+            if (!potentialImgUrl){
+                setErrorMessage("There was an error uploading your image. Truck creation will continue, you can add an image to your truck once its created.");
             }
             else{
-                newTruck.image_path = imgUrl;
+                newTruck.image_path = potentialImgUrl;
             }
         }
         
         //then generate qr code
+        const potentialPublicUrl: string | null = await generateAndUploadQRCode(newTruck.truck_id);
+        if (!potentialPublicUrl){
+            setErrorMessage("There was an error generating and storing the QR code for your truck. Please refresh and try again.");
+        }
+        else{
+            newTruck.qr_code_path = potentialPublicUrl;
+        }
         
+        //submit image updates
+        updateTruck(newTruck);
+        const updatedTruck: Truck | null = await getTruckById(newTruck.truck_id);
+        if (!updatedTruck){
+            setErrorMessage("There was an error while updating the truck img urls");
+        }
+        else{
+            let updateIndex: number = -1;
+            if (trucks){
+                for (let i = 0; i < trucks.length; i++){
+                    if (trucks[i].truck_id === updatedTruck.truck_id){
+                        updateIndex = i;
+                    }
+                }
+                trucks.splice(updateIndex, 1);
+                trucks.push(updatedTruck);
+            }
+        }
 
-        //then submit image updates
-
-        //then show menu's dropdown
-        
+        setCreatingTruck(false);
 
 
         
@@ -122,7 +161,7 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
         {!creatingTruck && <div className="managementContainer">
             <div className='managementItemList'>
                 <ul className='truckCards'>
-                    {trucks.map((truck) => (
+                    {trucks && trucks.map((truck) => (
                         <li key={truck.truck_id}>
                             <TruckCard truck={truck} />
                         </li>
@@ -152,6 +191,22 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
                     <input name='newTruckImg' type="file" accept="image/*" onChange={handleImageUpload} />
                 </div>
                 {previewURL && <img className='imagePreview' src={previewURL} alt='Truck Preview'></img>}
+                <div className='createFormInputGroup'>
+                    <label htmlFor="menuSelect">Select Menu (Optional)</label>
+                    <select 
+                        id="menuSelect" 
+                        className='createFormInput' 
+                        value={selectedMenuId ?? ""} 
+                        onChange={(e) => setSelectedMenuId(e.target.value ? Number(e.target.value) : null)}
+                    >
+                        <option value="">No Menu</option> {/* Option for null */}
+                        {menus?.map((menu) => (
+                            <option key={menu.menu_id} value={menu.menu_id}>
+                                {menu.menu_name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
                 <div>
                     <button type='submit'>Create Truck</button>
                     <button onClick={()=>setCreatingTruck(false)}>Cancel</button>

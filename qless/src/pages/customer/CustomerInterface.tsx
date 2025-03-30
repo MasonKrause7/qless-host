@@ -4,7 +4,7 @@ import { getTruckById, getMenuById, getProducts } from '../../utils/supabaseServ
 import ErrorMessage from '../../components/commonUI/ErrorMessage';
 import OrderMenu from './OrderMenu';
 import { Truck, Menu, Product } from '../../App';
-import "../../styles/global.css";
+import "../../styles/customer/CustomerInterface.css";
 function CustomerInterface() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -17,24 +17,32 @@ function CustomerInterface() {
     
     
     useEffect(() => {
-
+        setErrorMessage("");
         const truck_id_str = searchParams.get('truckId');
-        let truck_id_int: number = -1;
+    
+        if (!truck_id_str) {
+            setErrorMessage("Invalid truck ID. Please scan a valid QR code.");
+            return;
+        }
+    
+        const truck_id_int = parseInt(truck_id_str, 10);
+        
+        if (isNaN(truck_id_int)) {
+            setErrorMessage("Invalid truck ID format.");
+            return;
+        }
+    
         const fetchTruckById = async (truck_id: number) => {
-            
-            
-            if (truck_id_str){
-                truck_id_int = parseInt(truck_id_str);
-            }
             const potentialTruck = await getTruckById(truck_id);
             if (!potentialTruck) {
-                setErrorMessage("Could not find that truck! The QR code may be out of date....");
+                setErrorMessage("Could not find that truck! The QR code may be out of date.");
                 return;
             }
             setTruck(potentialTruck);
-        }
+        };
+    
         fetchTruckById(truck_id_int);
-    },[searchParams]);
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchMenu = async () => {
@@ -93,7 +101,7 @@ function CustomerInterface() {
             />
             <button onClick={handleSubmit}>Submit</button>
             {errorMessage !== "" && <ErrorMessage message={errorMessage}/>}
-            {truck && <img src={truck.image_path}></img>}
+            {truck && <img className='truckImgCustInterface' src={truck.image_path}></img>}
             {menu && products && <OrderMenu menu={menu} products={products} />}
 
         </div>

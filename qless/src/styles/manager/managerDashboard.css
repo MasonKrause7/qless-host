@@ -70,13 +70,20 @@
     margin: 15px;
     padding: 10px;
     width: 200px;
-    height: 200px;
+    height: 250px;
     align-items: center;
 }
 .cardImgContainer{
-    height: 150px;
-    border: 2px solid red;
     width: 150px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cardImgContainer img {
+    width: 150px;
+    height: 120px;
+    object-fit: cover;
     border-radius: 50%;
 }
 .cardContainer button{

@@ -1,4 +1,4 @@
-import type { User, Truck, InsertTruck, Menu, Product } from '../App';
+import type { User, Truck, InsertTruckDto, Menu, Product } from '../App';
 import supabase from './supabase';
 
 export async function getManager(){
@@ -45,6 +45,9 @@ export async function signIn(email:string, password:string){
         if (userData !== null){
             const loggedUser: User = userData[0];
             return loggedUser;
+        }
+        else if (userError){
+            console.log('Could not get loggedUser')
         }
     }
     else if (error !== null){
@@ -110,6 +113,21 @@ export async function getTrucks(manager_id: string){
     return null;
 };
 
+export async function getMenus(manager_id: string){
+    const { data, error } = await supabase.from('menu').select().eq("manager_id", manager_id);
+    if (error) {
+        console.log(`Error fetching menus: ${error.code}.`);
+    }
+    else if (data){
+        const menuList: Menu[] = data as Menu[];
+        return menuList;
+    }
+    else {
+        console.log("Unexpected error while fetching menus...");
+    }
+    return null;
+};
+
 
 
 export async function uploadTruckImage(file: File, manager_id: string) {
@@ -133,7 +151,7 @@ const isoTimestamp = now.toISOString();
     }
 };
 
-export async function postTruck(newTruck: InsertTruck){
+export async function postTruck(newTruck: InsertTruckDto){
     const { data, error } = await supabase.from("truck").insert(newTruck).select("*");
     if (error){
         console.log(`Error inserting truck ${newTruck.truck_name}`);
@@ -169,7 +187,7 @@ export async function getMenuById(menu_id: number){
     const { data, error } = await supabase.from('menu').select("*").eq("menu_id", menu_id);
     if (error){
         console.log("Error occurred while getting the menu with id ", menu_id, error);
-        return null;``
+        return null;
     }
     else if(data && data.length > 0){
         return data[0] as Menu;
@@ -196,13 +214,16 @@ export async function getProducts(menu_id: number){
 }
 
 export async function uploadQrCode(truck_id: number, blob: Blob){
-    const fileName = `qr-codes/truck-${truck_id}.png`;
+    const fileName = `truck-${truck_id}.png`;
     // Upload to Supabase Storage (upsert allows overwriting)
     const { data, error } = await supabase.storage
       .from("qr-codes")
-      .upload(fileName, blob, { upsert: true });
+      .upload(fileName, blob);
 
     if (error) throw error;
+    else if (data){
+        console.log(`QR code generated and uploaded successfully`);
+    }
 
     // Get the public URL
     const { data: publicUrlData } = supabase.storage
@@ -210,6 +231,24 @@ export async function uploadQrCode(truck_id: number, blob: Blob){
       .getPublicUrl(fileName);
 
     return publicUrlData.publicUrl; // Return the QR Code's public URL
+}
+
+
+export async function updateTruck(updatedTruck: Truck){
+    
+    const { error } = await supabase
+        .from('truck')
+        .update({
+            truck_name: updatedTruck.truck_name,
+            qr_code_path: updatedTruck.qr_code_path,
+            image_path: updatedTruck.image_path,
+            menu_id: updatedTruck.menu_id,
+        })
+        .eq("truck_id", updatedTruck.truck_id);
+    if (error){
+        console.log(`Error updating truck ${updatedTruck.truck_id}: ${error.message}`);
+    }
+
 }
 
 

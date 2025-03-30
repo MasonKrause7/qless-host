@@ -11,15 +11,22 @@ const TruckCard: React.FC<TruckCardProps> = ({ truck }) => {
     const viewTruck = () => {
         navigate('/manage/truck', { state: { truck:truck } });
     }
+    const downloadQr = () => {
+        //download QR logic
+    }
+    console.log('img path=',truck.truck_name, truck.image_path);
 
     return (
         <>
             <div  className='cardContainer'>
                 <div className='cardImgContainer'>
-                    <img src={truck.image_path} alt="" />
+                <img src={truck.image_path}/>
+
                 </div>
                 <h5>{truck.truck_name}</h5>
                 <button onClick={() => viewTruck()}>Manage</button>
+                <button onClick={() => downloadQr()}>Download QR</button>
+                <img src={truck.qr_code_path} alt="" />
             </div>
         </>
     )

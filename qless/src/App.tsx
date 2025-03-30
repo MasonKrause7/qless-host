@@ -4,7 +4,6 @@ import LandingPage from './pages/login-signup/LandingPage';
 import CookDashboard from './pages/kitchen/CookDashboard';
 import ManagerDashboard from './pages/manager/ManagerDashboard';
 import CustomerInterface from './pages/customer/CustomerInterface';
-import OrderMenu from './pages/customer/OrderMenu';
 import TruckView from './pages/manager/TruckView';
 import './styles/global.css';
 import { StrictMode } from 'react';
@@ -59,9 +58,10 @@ export type Truck = {
   menu_id: number | null,
   manager_id: string
 }
-export type InsertTruck = {
+export type InsertTruckDto = {
   truck_name: string,
-  manager_id: string
+  manager_id: string,
+  menu_id: number | null
 }
 export type Menu = {
   menu_id: number,

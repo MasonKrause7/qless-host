@@ -2,6 +2,11 @@ import QRCode from "qrcode";
 import { uploadQrCode } from "./supabaseService";
 
 
+/* 
+Qr code flow,,,
+manager creates a truck -> qr code is generated -> qr img file is stored in storage -> publicURL is returned.
+*/
+
 export const generateAndUploadQRCode = async (truck_id: number) => {
   const value = `${window.location.origin}/customer?truckId=${truck_id}`;
 
