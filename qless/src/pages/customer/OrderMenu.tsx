@@ -1,30 +1,31 @@
 import "../../styles/customer/OrderMenu.css";
-import {useLocation, useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import type { Menu, Product } from '../../App';
 
-function OrderMenu() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [custPhoneNumber, setCustPhoneNumber] = useState("");
-    useEffect(() => {
-        if (!location.state?.cleanedNumber) {
-            console.log("Cannot access menu without phone number");
-            navigate("/customer", { replace: true });
-        } else {
-            setCustPhoneNumber(location.state.cleanedNumber);
-        }
-    }, [location, navigate]);
+
+type OrderMenuProps = {
+    menu: Menu,
+    products: Product[]
+}
+
+const OrderMenu: React.FC<OrderMenuProps> = ({ menu, products }) => {
+    
+    
     return (
         <div>
-            <h1>Order Menu</h1>
+            <h1>Order Menu for </h1>
+            <h2>{menu.menu_name}</h2>
             <p>Welcome! Choose your food items here.</p>
-            <p>Your phone number: {custPhoneNumber}</p>
             <div className="order-menu-container">
-                {/* Empty box for now */}
-                <div className="menu-box">Item 1</div>
-                <div className="menu-box">Item 2</div>
-                <div className="menu-box">Item 3</div>
-                <div className="menu-box">Item 4</div>
+                <ul>
+                    {products.map(product => (
+                        <li 
+                            key={product.product_id}
+                        >
+                            <p>{product.product_name}</p>
+                            <p>{product.description}</p>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
         

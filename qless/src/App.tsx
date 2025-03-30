@@ -25,7 +25,6 @@ function App() {
         </StrictMode>
       } />
       <Route path="/customer" element={<CustomerInterface />} />
-      <Route path="/order-menu" element={<OrderMenu />} />
     </Routes>
 
   )
@@ -58,7 +57,11 @@ export type Truck = {
   image_path: string,
   qr_code_path: string,
   menu_id: number | null,
-  manager_id: number
+  manager_id: string
+}
+export type InsertTruck = {
+  truck_name: string,
+  manager_id: string
 }
 export type Menu = {
   menu_id: number,
@@ -91,7 +94,11 @@ export type OrderDetail = {
 }
 
 export type Product = {
+  product_id: number
   product_name: string,
   price: number,
-  image_path: string
+  description: string,
+  image_path: string,
+  is_available: boolean,
+  menu_id: number
 }
