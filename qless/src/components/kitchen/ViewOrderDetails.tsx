@@ -1,6 +1,6 @@
 import "../../styles/kitchen/cookDashboard.css";
-import { Order, OrderDetail } from "../../App";
-import { getOrderStatus, UpdateOrderStatusButton } from "../../pages/kitchen/CookDashboard";
+import { Order, OrderDetail, OrderStatus } from "../../App";
+import { getListDetails, getOrderStatus, UpdateOrderStatusButton, lastUpdateTime, formatPhoneNumber } from "../../pages/kitchen/CookDashboard";
 import { useState, useEffect } from "react";
 
 export default function ViewOrderDetails({
@@ -9,14 +9,16 @@ export default function ViewOrderDetails({
     currentOrder,
     orderDetails,
     setIsShowing: setIsShowing,
-    setOrderNum: setOrderNum
+    setOrderNum: setOrderNum,
+    refreshOrders
 }: {
     orders: Order[];
-    orderStatus: number;
+    orderStatus: OrderStatus;
     currentOrder: Order | undefined;
     orderDetails: OrderDetail[];
     setIsShowing: React.Dispatch<React.SetStateAction<string>>;
     setOrderNum: React.Dispatch<React.SetStateAction<number>>;
+    refreshOrders: () => Promise<void>;
 }) {
 
     if (currentOrder === undefined) {
@@ -35,25 +37,7 @@ export default function ViewOrderDetails({
 
 
     //maps order details
-    const listDetails = orderDetails.map(detail =>
-
-        <li className="listItem" key={detail.order_product_id}>
-            <div className="detailInfo">
-                <div className="detailImg">
-                    <img src={detail.product.image_path.includes("/image/path") ? "/src/tempimg/img.jpg" : detail.product.image_path} alt="Product Image" />
-                </div>
-                <div className="details">
-                    <ol>
-                        <li>{detail.product.product_name}</li>
-                        <li>Quantity: {detail.qty}</li>
-                    </ol>
-                </div>
-                <div className="price">${(detail.product.price * detail.qty)}</div>
-            </div>
-            <button>Delete</button>
-        </li>
-
-    );
+    const listDetails = getListDetails(orderDetails, true);
 
     //handles "View All Orders" button
     function handleViewAllButton() {
@@ -81,11 +65,13 @@ export default function ViewOrderDetails({
                     <UpdateOrderStatusButton
                         className="bigDetailsButton"
                         currentOrder={currentOrder}
+                        refreshOrders={refreshOrders}
+                        setIsShowing={setIsShowing}
                         setOrderNum={setOrderNum}
                     />
                     <div className="prevNextButton">
                         <PrevDetailsPageButton
-                            orders={orders}
+                            filteredOrders={filteredOrders}
                             currentOrder={currentOrder}
                             setOrderNum={setOrderNum}
                         />
@@ -102,49 +88,24 @@ export default function ViewOrderDetails({
     );
 }
 
-/*Order Status:
-    1: Recieved
-    2: Being Cooked
-    3: Ready
-    4: Picked Up
-*/
 
-function lastUpdateTime(order: Order): string {
-    let time = null;
-    switch (order.status_id) {
-        case 1:
-            time = new Date(order.time_received);
-            break;
-        case 2:
-            if (order.time_being_cooked)
-                time = new Date(order.time_being_cooked);
-            break;
-        case 3:
-            if (order.time_ready)
-                time = new Date(order.time_ready);
-            break;
-        case 4:
-            if (order.time_picked_up)
-                time = new Date(order.time_picked_up);
-            break;
-    }
-    return time ? time.toLocaleTimeString() : "Error: No Time";
-}
 
-function formatPhoneNumber(order: Order): string {
-    const phone = order.customer_phone_number;
-    return `(${phone.slice(0, 3)})-${phone.slice(3, 6)}-${phone.slice(6)}`;
-}
 
-//handle the previous button click
-function PrevDetailsPageButton({ orders, currentOrder, setOrderNum }:
-    {
-        orders: Order[];
-        currentOrder: Order;
-        setOrderNum: React.Dispatch<React.SetStateAction<number>>
-    }) {
+
+
+
+//previous details button
+function PrevDetailsPageButton({
+    filteredOrders,
+    currentOrder,
+    setOrderNum
+}: {
+    filteredOrders: Order[];
+    currentOrder: Order;
+    setOrderNum: React.Dispatch<React.SetStateAction<number>>
+}) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-    const curOrderIndex: number = orders.indexOf(currentOrder);
+    const curOrderIndex: number = filteredOrders.indexOf(currentOrder);
 
     let prevOrder: Order | null = null;
 
@@ -157,7 +118,7 @@ function PrevDetailsPageButton({ orders, currentOrder, setOrderNum }:
     }, [curOrderIndex]);  // Runs only when curOrderIndex changes
 
     if (curOrderIndex > 0) {
-        prevOrder = orders[curOrderIndex - 1];
+        prevOrder = filteredOrders[curOrderIndex - 1];
     }
 
     const click = () => {
@@ -169,7 +130,7 @@ function PrevDetailsPageButton({ orders, currentOrder, setOrderNum }:
     return <button onClick={click} disabled={isButtonDisabled}>Prev</button>;
 }
 
-//handle the next button click
+//next details button
 function NextDetailsPageButton({ filteredOrders, currentOrder, setOrderNum }:
     {
         filteredOrders: Order[];

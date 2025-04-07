@@ -14,7 +14,7 @@ function App() {
   return (
 
     <Routes>
-      <Route path="/" element={<LandingPage />}/>
+      <Route path="/" element={<LandingPage />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/manage" element={<ManagerDashboard />} />
       <Route path="/cook" element={
@@ -79,7 +79,8 @@ export type Order = {
   time_being_cooked: Date | null,
   time_ready: Date | null,
   time_picked_up: Date | null,
-  status_id: number
+  status_id: OrderStatus,
+  truck_id: number
 }
 
 export type OrderDetail = {
@@ -92,4 +93,11 @@ export type Product = {
   product_name: string,
   price: number,
   image_path: string
+}
+
+export enum OrderStatus {
+  Received = 1,
+  BeingCooked = 2,
+  Ready = 3,
+  PickedUp = 4
 }
