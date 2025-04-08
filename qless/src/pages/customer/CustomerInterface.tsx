@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getTruckById, getMenuById, getProducts } from '../../utils/supabaseService';
+import { getTruckById, getMenuById, getProducts } from '../../service/supabaseService';
 import ErrorMessage from '../../components/commonUI/ErrorMessage';
 import OrderMenu from './OrderMenu';
 import { Truck, Menu, Product } from '../../App';

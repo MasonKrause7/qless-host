@@ -7,6 +7,7 @@ import CustomerInterface from './pages/customer/CustomerInterface';
 import TruckView from './pages/manager/TruckView';
 import './styles/global.css';
 import { StrictMode } from 'react';
+import { OrderStatus } from './service/orderStatusService';
 
 function App() {
 
@@ -14,7 +15,7 @@ function App() {
   return (
 
     <Routes>
-      <Route path="/" element={<LandingPage />}/>
+      <Route path="/" element={<LandingPage />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/manage" element={<ManagerDashboard />} />
       <Route path="/manage/truck" element={<TruckView  />} />
@@ -84,13 +85,14 @@ export type Order = {
   time_being_cooked: Date | null,
   time_ready: Date | null,
   time_picked_up: Date | null,
-  status_id: number
+  status_id: OrderStatus,
+  truck_id: number
 }
 
 export type OrderDetail = {
   order_product_id: number,
   qty: number,
-  product: Product
+  product: ProductDto
 }
 
 export type Product = {
@@ -102,3 +104,9 @@ export type Product = {
   is_available: boolean,
   menu_id: number
 }
+export type ProductDto = {
+  product_name: string,
+  price: number,
+  image_path: string
+}
+

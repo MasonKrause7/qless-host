@@ -1,5 +1,5 @@
-import type { User, Truck, InsertTruckDto, Menu, Product } from '../App';
-import supabase from './supabase';
+import type { User, Truck, InsertTruckDto, Menu, Product, Order } from '../App';
+import supabase from '../utils/supabase';
 
 export async function getManager(){
     const { data: authUser, error: authUserError } = await supabase.auth.getUser();
@@ -233,7 +233,7 @@ export async function uploadQrCode(truck_id: number, blob: Blob){
     return publicUrlData.publicUrl; // Return the QR Code's public URL
 }
 
-
+//in progress
 export async function updateTruck(updatedTruck: Truck){
     
     const { error } = await supabase
@@ -251,5 +251,22 @@ export async function updateTruck(updatedTruck: Truck){
 
 }
 
-
-    
+export async function getOrders(){
+    try {
+        const { data, error } = await supabase.from('orders').select();
+        if (data) {
+            const orderList: Order[] = data as Order[];
+            orderList.sort((a, b) => a.order_id - b.order_id);
+            return orderList;
+        }
+        else if (error){
+            console.log("Error in getOrders: ", error);
+        }
+        else{
+            console.log("Unexpected error in getOrders...");
+        }
+    } catch (err) {
+        console.log("Exception thrown in getOrders", err);
+    }
+    return null;
+}

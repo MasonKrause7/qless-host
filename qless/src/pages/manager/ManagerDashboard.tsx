@@ -4,7 +4,7 @@ import TruckManagement from "../../components/manager/TruckManagement";
 import MenuManagement from '../../components/manager/MenuManagement';
 import EmployeeManagement from '../../components/manager/EmployeeManagement';
 import ManagerDashboardNav from '../../components/manager/ManagerDashboardNav';
-import { getManager } from '../../utils/supabaseService';
+import { getManager } from '../../service/supabaseService';
 import type { User } from '../../App';
 
 

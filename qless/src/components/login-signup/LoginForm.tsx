@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../commonUI/ErrorMessage';
-import { signIn } from '../../utils/supabaseService';
+import { signIn } from '../../service/supabaseService';
 
 
 const LoginForm: React.FC = () => {

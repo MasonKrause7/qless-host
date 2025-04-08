@@ -1,5 +1,5 @@
 import QRCode from "qrcode";
-import { uploadQrCode } from "./supabaseService";
+import { uploadQrCode } from "../service/supabaseService";
 
 
 /* 

@@ -5,6 +5,10 @@ import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
 import ViewOrderDetails from '../../components/kitchen/ViewOrderDetails';
 import { Order, OrderDetail } from '../../App';
+import { OrderStatus } from '../../service/orderStatusService';
+import FinishOrder from '../../components/kitchen/FinishOrder';
+import { getOrders } from '../../service/supabaseService';
+import ErrorMessage from '../../components/commonUI/ErrorMessage'; 
 
 
 export default function CookDashboard() {
@@ -13,6 +17,7 @@ export default function CookDashboard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([]);
     const [currentOrder, setCurrentOrder] = useState<Order>();
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const navigate = useNavigate();
 
     //pulls orders from db and saves as array in the orders state
@@ -25,41 +30,55 @@ export default function CookDashboard() {
             }
         }
         checkAuth();
-        //pull orders from the database and store in "orders" state
-        const fetchOrders = async () => {
-            try {
-                const { data } = await supabase.from('orders').select();
-                if (data) {
-                    let orderList: Order[] = data.map(order => ({
-                        order_id: order.order_id,
-                        subtotal: order.subtotal,
-                        tax_rate: order.tax_rate,
-                        customer_phone_number: order.customer_phone_number,
-                        time_received: order.time_received,
-                        time_being_cooked: order.time_being_cooked,
-                        time_ready: order.time_ready,
-                        time_picked_up: order.time_picked_up,
-                        status_id: order.status_id
-                    }));
-                    orderList.sort((a, b) => a.order_id - b.order_id);
-                    setOrders(orderList);
-                    setOrderNum(orderList[0].order_id);
-                }
-                else {
-                    console.log("Failed to fetch orders.");
-                }
-            }
-            catch (err) {
-                console.log("Unable to complete fetch orders process...", err);
-            }
-        }
-        fetchOrders();
 
-    }, []);
+        fetchOrders();//use on mount
+
+    }, [navigate]);
+
+    //pull orders from the database and store in "orders" state
+    const fetchOrders = async () => {
+        let orderList: Order[] = []
+        setErrorMessage("");
+        const potentialOrderList: Order[] | null = await getOrders();
+        if (!potentialOrderList){
+            console.log("Error fetching orders");
+            setErrorMessage("There was an error fetching your orders.");
+        }
+        else if (potentialOrderList.length === 0){
+            //handle the case where there are no orders with a default message
+
+        }
+        else{
+            orderList = potentialOrderList;
+            setOrders(orderList);
+            setOrderNum(orderList[0].order_id);
+        }
+        
+    }
+
+    //updates the orders
+    const refreshOrders = async () => {
+        setErrorMessage("");
+        let orderList: Order[] = [];
+        const potentialOrderList: Order[] | null = await getOrders();
+        if (!potentialOrderList){
+            console.log("Error refreshing orders");
+            setErrorMessage("Error refreshing orders, please refresh the page. If the problem persists, logout and try again.");
+        }
+        else if(potentialOrderList.length === 0){
+            //handle this with a default, "you dont have any orders"
+
+        }
+        else{
+            orderList = potentialOrderList;
+            const updatedCurrent = orderList.find(i => i.order_id === orderNum);
+            if (updatedCurrent) setCurrentOrder(updatedCurrent);
+        }       
+    };
 
     //pull order details from db whenever order num changes
     useEffect(() => {
-        const fetchDetails = async () => {
+        const fetchOrderDetails = async () => {
             if (orderNum !== 0) {
                 try {
 
@@ -72,7 +91,7 @@ export default function CookDashboard() {
                         image_path
                     )`).eq('order_id', orderNum);
                     if (data) {
-                        const currOrder = data.map(detail => ({
+                        const currOrder: OrderDetail[] = data.map(detail => ({
                             order_product_id: detail.order_product_id,
                             qty: detail.qty,
                             product: Array.isArray(detail.product) ? detail.product[0] : detail.product
@@ -87,9 +106,9 @@ export default function CookDashboard() {
                 }
             }
         }
-        fetchDetails();
+        fetchOrderDetails();
         setCurrentOrder(orders.find(i => i.order_id === orderNum));
-    }, [orderNum]);
+    }, [orderNum, orders]);
 
 
     return (
@@ -99,109 +118,122 @@ export default function CookDashboard() {
                     setIsShowing={setIsShowing}
                     setOrderNum={setOrderNum}
                     orders={orders}
-                    orderStatus={3}
+                    orderStatus={OrderStatus.Ready}
+                    refreshOrders={refreshOrders}
                 />}
 
                 {isShowing === "details" && <ViewOrderDetails
                     orders={orders}
-                    orderStatus={3}
+                    orderStatus={OrderStatus.Ready}
                     currentOrder={currentOrder}
                     orderDetails={orderDetails}
                     setIsShowing={setIsShowing}
                     setOrderNum={setOrderNum}
+                    refreshOrders={refreshOrders}
                 />}
 
-                {isShowing === "finish" && <FinishButton
+                {isShowing === "finish" && <FinishOrder
                     setIsShowing={setIsShowing}
-                    orderNum={orderNum}
+                    orderDetails={orderDetails}
+                    currentOrder={currentOrder}
+                    refreshOrders={refreshOrders}
                 />}
             </div>
+            {errorMessage !== "" && <ErrorMessage message={errorMessage}/>}
         </div>
     )
 }
 
-/*Order Status:
-    1: Recieved
-    2: Being Cooked
-    3: Ready
-    4: Picked Up
-*/
 
-//converts an order status number to its coresponding string
-export function getOrderStatus(id: number) {
-    let status = "";
-    switch (id) {
-        case 1:
-            status = "Recieved"
-            break;
-        case 2:
-            status = "Being Cooked"
-            break;
-        case 3:
-            status = "Ready"
-            break;
-        case 4:
-            status = "Picked Up"
-            break;
-    }
-    return status;
-}
 
-function FinishButton({ setIsShowing, orderNum }:
-    { setIsShowing: React.Dispatch<React.SetStateAction<string>>; orderNum: number }) {
-    return (
-        <>
-            <h1>Finish for: {orderNum}</h1>
-            <button onClick={() => setIsShowing("list")}>Back</button>
-        </>
-    );
-}
+
 
 
 export function UpdateOrderStatusButton({
     className,
     currentOrder,
+    refreshOrders,
+    setIsShowing,
     setOrderNum
 }: {
     className: string;
     currentOrder: Order;
+    refreshOrders: () => Promise<void>;
+    setIsShowing: React.Dispatch<React.SetStateAction<string>>;
     setOrderNum: React.Dispatch<React.SetStateAction<number>>
 }) {
-    const [currentStatus, setCurrentStatus] = useState(1);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [currentStatus, setCurrentStatus] = useState<OrderStatus>(OrderStatus.Received);
+    const isButtonDisabled: boolean = currentStatus >= 4;
+
     //when the current order updates, change the current status to reflect new order
     useEffect(() => {
         setCurrentStatus(currentOrder.status_id);
     }, [currentOrder]);
 
-    let statusText = "Invalid Status";//default status
-
-    switch (currentStatus) {//update text on the button
-        case 1:
-            statusText = "Begin Cooking"
-            break;
-        case 2:
-            statusText = "Order Ready"
-            break;
-        case 3:
-            statusText = "Finish Order"
-            break;
-        case 4:
-            statusText = "Order Completed"
-            setIsButtonDisabled(true);
-            break;
-    }
+    //handle click
     const click = async () => {
+        const newStatus = getNextStatus(currentStatus);
+        if (!newStatus) return;
+
+        //if status is Ready, switch view to FinishOrder
+        if (newStatus === OrderStatus.PickedUp) {
+            setOrderNum(currentOrder.order_id);
+            setIsShowing("finish");
+            return;
+        }
+
+        //otherwise, update
+        const updateData: Partial<Order> = { status_id: newStatus };
+        if (newStatus === OrderStatus.BeingCooked)
+            updateData.time_being_cooked = new Date();
+        else if (newStatus === OrderStatus.Ready)
+            updateData.time_ready = new Date();
         try {
-            const { error } = await supabase.from('orders').update({ status_id: (currentStatus + 1) }).eq('order_id', currentOrder.order_id);
-            if (error)
+            const { error } = await supabase
+                .from('orders')
+                .update(updateData)
+                .eq('order_id', currentOrder.order_id);
+            if (error) {
                 console.log(`Error updating order status for order num ${currentOrder.order_id}`, error);
-            setOrderNum
+            } else {
+                setCurrentStatus(newStatus);
+                await refreshOrders();
+
+
+            }
         }
         catch (err) {
             console.log("Error running update button click", err);
         }
     }
 
-    return <button onClick={click} className={className} disabled={isButtonDisabled}>{statusText}</button>
+    return <button
+        onClick={click}
+        className={className}
+        disabled={isButtonDisabled}
+    >
+        {getStatusText(currentStatus)}
+    </button>
 }
+
+const getStatusText = (status: OrderStatus) => {
+    switch (status) {
+        case OrderStatus.Received: return "Start Cooking";
+        case OrderStatus.BeingCooked: return "Mark as Ready";
+        case OrderStatus.Ready: return "Finish Order";
+        case OrderStatus.PickedUp: return "Order Completed";
+        default: return "Invalid Status";
+    }
+};
+
+const getNextStatus = (status: OrderStatus): OrderStatus | null => {
+    switch (status) {
+        case OrderStatus.Received: return OrderStatus.BeingCooked;
+        case OrderStatus.BeingCooked: return OrderStatus.Ready;
+        case OrderStatus.Ready: return OrderStatus.PickedUp;
+        case OrderStatus.PickedUp: return null; // no further status
+        default: return null;
+    }
+};
+
+

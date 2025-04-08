@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { signUp } from '../../utils/supabaseService';
+import { signUp } from '../../service/supabaseService';
 import ErrorMessage from '../commonUI/ErrorMessage';
 import { useNavigate } from 'react-router-dom';
 

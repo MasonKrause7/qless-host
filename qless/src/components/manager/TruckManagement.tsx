@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../styles/manager/managerDashboard.css';
-import { getTrucks, getMenus, uploadTruckImage, postTruck, updateTruck, getTruckById } from '../../utils/supabaseService';
+import { getTrucks, getMenus, uploadTruckImage, postTruck, updateTruck, getTruckById } from '../../service/supabaseService';
 import type { ManagementSubDashProps, Truck, InsertTruckDto, Menu } from '../../App';
 import ErrorMessage from '../commonUI/ErrorMessage';
 import TruckCard from './TruckCard';
