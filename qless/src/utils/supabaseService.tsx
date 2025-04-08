@@ -131,8 +131,8 @@ export async function getMenus(manager_id: string){
 
 
 export async function uploadTruckImage(file: File, manager_id: string) {
-const now = new Date();
-const isoTimestamp = now.toISOString();
+    const now = new Date();
+    const isoTimestamp = now.toISOString();
     const filePath = `/truck-images/manager-${manager_id}/uploaded-${isoTimestamp}`;
     const { data: response, error } = await supabase.storage.from('trucks').upload(filePath, file);
     if (error) {
