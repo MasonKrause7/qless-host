@@ -6,8 +6,8 @@ import ManagerDashboard from './pages/manager/ManagerDashboard';
 import CustomerInterface from './pages/customer/CustomerInterface';
 import TruckView from './pages/manager/TruckView';
 import './styles/global.css';
-import { StrictMode } from 'react';
 import { OrderStatus } from './service/orderStatusService';
+import { StrictMode } from 'react';
 
 function App() {
 
@@ -19,11 +19,7 @@ function App() {
       <Route path="*" element={<NotFound />} />
       <Route path="/manage" element={<ManagerDashboard />} />
       <Route path="/manage/truck" element={<TruckView  />} />
-      <Route path="/cook" element={
-        <StrictMode>
-          <CookDashboard />
-        </StrictMode>
-      } />
+      <Route path="/cook" element={<StrictMode><CookDashboard /></StrictMode>} />
       <Route path="/customer" element={<CustomerInterface />} />
     </Routes>
 

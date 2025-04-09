@@ -1,45 +1,38 @@
 import '../../styles/kitchen/cookDashboard.css';
-import { Order } from '../../App';
+import { Order, Truck } from '../../App';
 import { OrderStatus, getOrderStatus } from '../../service/orderStatusService';
-import { UpdateOrderStatusButton } from '../../pages/kitchen/CookDashboard';
+import { UpdateOrderStatusButton } from './UpdateOrderStatusButton';
 import supabase from '../../utils/supabase';
-import { useState, useMemo, useEffect } from 'react';
+import { CookDashboardView, lastUpdateTime } from '../../service/cookDashboardService';
 
-
-
-export default function ListOrders({
-    setIsShowing: setIsShowing,
-    setOrderNum: setOrderNum,
-    orders: orders,
-    orderStatus,
-    refreshOrders
-}: {
-    setIsShowing: React.Dispatch<React.SetStateAction<string>>;
+type ListOrdersProps = {
+    setIsShowing: React.Dispatch<React.SetStateAction<CookDashboardView>>;
     setOrderNum: React.Dispatch<React.SetStateAction<number>>;
     orders: Order[];
-    orderStatus: OrderStatus;
+    orderStatusFilter: OrderStatus;
     refreshOrders: () => Promise<void>;
-}) {
+    setOrderStatusFilter: React.Dispatch<React.SetStateAction<OrderStatus>>;
+    trucks: Truck[];
+    selectedTruckId: number | 'all' | null;
+    setSelectedTruckId: React.Dispatch<React.SetStateAction<number | "all" | null>>;
+}
 
-    const [selectedTruckId, setSelectedTruckId] = useState<number | 'all' | null>(null);
+export default function ListOrders({
+    setIsShowing,
+    setOrderNum,
+    orders,
+    orderStatusFilter,
+    refreshOrders,
+    setOrderStatusFilter,
+    trucks,
+    selectedTruckId,
+    setSelectedTruckId
+}: ListOrdersProps) {
 
-
-
-    //create truck list
-    const availableTrucks = useMemo(() => {
-        const trucks = Array.from(new Set(orders.map(o => o.truck_id)));
-        return trucks.sort((a, b) => a - b);//sort by truck id
-    }, [orders])
-
-    //set the first truck to default
-    useEffect(() => {
-        if (availableTrucks.length > 0 && selectedTruckId === null)
-            setSelectedTruckId(availableTrucks[0]);
-    }, [availableTrucks, selectedTruckId]);
 
     //filter the order list to relevant orders
     const orderList = orders.filter(order =>
-        order.status_id <= orderStatus &&
+        order.status_id <= orderStatusFilter &&
         (selectedTruckId === 'all' || selectedTruckId === null || order.truck_id === selectedTruckId)
     );
 
@@ -52,6 +45,7 @@ export default function ListOrders({
                     <li>Order Number: {currentOrder.order_id}</li>
                     <li>Time Submitted: {new Date(currentOrder.time_received).toLocaleTimeString()}</li>
                     <li>Status: {getOrderStatus(currentOrder.status_id)}</li>
+                    <li>Last Update: {lastUpdateTime(currentOrder)}</li>
                 </ul>
             </div>
             <div className="listRight">
@@ -72,23 +66,22 @@ export default function ListOrders({
     //for when you click the "veiw details" button
     function handleDetailsClick(orderId: number) {
         const click = () => {
-            setIsShowing("details");
+            setIsShowing(CookDashboardView.Details);
             setOrderNum(orderId);
         }
         return click;
     }
 
 
-
     //return list
     return (
         <>
             <div className="cookDashLeft">
-                <ol>{listItems}</ol>
+                {orderList.length === 0 ? <div className="listItem">No Orders in Queue</div> : <ol>{listItems}</ol>}
             </div>
             <div className="cookDashRight">
-                <label htmlFor="truckFilter">Select Truck:</label>
-                {selectedTruckId !== null && (
+                {trucks.length > 0 && <label htmlFor="truckFilter">Select Truck:</label>}
+                {selectedTruckId !== null && trucks.length > 0 && (
                     <select
                         name="truckFilter"
                         id="truckFilter"
@@ -98,17 +91,44 @@ export default function ListOrders({
                         }
                     >
                         <option value='all'>All Trucks</option>
-                        {availableTrucks.map(id => (
-                            <option key={id} value={id}>Truck {id}</option>
+                        {trucks.map(truck => (
+                            <option key={truck.truck_id} value={truck.truck_id}>
+                                {truck.truck_name}
+                            </option>
                         ))}
 
                     </select>
                 )}
+                <br />
+                <ViewPastOrders orderStatusFilter={orderStatusFilter} setOrderStatusFilter={setOrderStatusFilter} />
                 <p>Just For Testing</p>
                 <TempResetButton refreshOrders={refreshOrders} />
             </div>
         </>
     );
+}
+
+type ViewPastOrdersProps = {
+    orderStatusFilter: OrderStatus;
+    setOrderStatusFilter: React.Dispatch<React.SetStateAction<OrderStatus>>;
+}
+
+function ViewPastOrders({
+    orderStatusFilter,
+    setOrderStatusFilter
+}: ViewPastOrdersProps) {
+
+    const click = () => {
+        if (orderStatusFilter === OrderStatus.Ready)
+            setOrderStatusFilter(OrderStatus.PickedUp);
+        else
+            setOrderStatusFilter(OrderStatus.Ready);
+
+    }
+
+
+
+    return <button onClick={click}>{orderStatusFilter === OrderStatus.PickedUp ? "View Current Orders" : "View Past Orders"}</button>
 }
 
 //for testing

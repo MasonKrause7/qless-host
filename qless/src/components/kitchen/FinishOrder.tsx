@@ -1,29 +1,29 @@
-import { OrderDetail } from "../../App";
-import { OrderStatus, getOrderStatus } from '../../service/orderStatusService';
-import { getListDetails } from '../../service/cookDashboardService';
-import { lastUpdateTime } from "../../service/cookDashboardService";
-import { formatPhoneNumber } from '../../service/formatter';
-import { Order } from "../../App";
+import { OrderDetail, Order } from "../../App";
+import { CookDashboardView, getListDetails } from '../../service/cookDashboardService';
+import { updateOrderStatus } from "../../service/supabaseService";
+import { OrderStatus } from "../../service/orderStatusService";
+import { OrderSummary } from "./OrderSummary";
 
-import supabase from "../../utils/supabase";
-
-
+type FinishOrderProps = {
+    setIsShowing: React.Dispatch<React.SetStateAction<CookDashboardView>>;
+    orderDetails: OrderDetail[];
+    currentOrder: Order | undefined;
+    refreshOrders: () => Promise<void>;
+    setOrderStatusFilter: React.Dispatch<React.SetStateAction<OrderStatus>>;
+}
 
 export default function FinishOrder({
     setIsShowing,
     orderDetails,
     currentOrder,
-    refreshOrders
-}: {
-    setIsShowing: React.Dispatch<React.SetStateAction<string>>;
-    orderDetails: OrderDetail[];
-    currentOrder: Order | undefined;
-    refreshOrders: () => Promise<void>;
-}) {
+    refreshOrders,
+    setOrderStatusFilter
+}: FinishOrderProps) {
 
     if (currentOrder === undefined) {
-        console.log("Invalid order");
-        setIsShowing("list");
+        console.log("Order undefined");
+        setIsShowing(CookDashboardView.List);
+        setOrderStatusFilter(OrderStatus.Ready);
         return;
     }
 
@@ -38,12 +38,7 @@ export default function FinishOrder({
             </div>
             <div className="cookFinishRight">
                 <div className="details">
-                    <ol>
-                        <li>Order Number: {currentOrder.order_id}</li>
-                        <li>Order Status: {getOrderStatus(currentOrder.status_id)}</li>
-                        <li>Last Update: {lastUpdateTime(currentOrder)}</li>
-                        <li>Phone Number: {formatPhoneNumber(currentOrder)}</li>
-                    </ol>
+                    <OrderSummary order={currentOrder}/>
                     <br />
                     <ol>
                         <li><h4>Subtotal: ${subtotal.toFixed(2)}</h4></li>
@@ -59,8 +54,8 @@ export default function FinishOrder({
                         refreshOrders={refreshOrders}
                     />
                     <div className="finishNavButtons">
-                        <button onClick={() => setIsShowing("details")}>Back</button>
-                        <button onClick={() => setIsShowing("list")}>View All Orders</button>
+                        <button onClick={() => setIsShowing(CookDashboardView.Details)}>View Order Details</button>
+                        <button onClick={() => setIsShowing(CookDashboardView.List)}>View All Orders</button>
                     </div>
                 </div>
             </div>
@@ -68,34 +63,27 @@ export default function FinishOrder({
     );
 }
 
+type FinishOrderButtonProps = {
+    setIsShowing: React.Dispatch<React.SetStateAction<CookDashboardView>>;
+    orderId: number;
+    refreshOrders: () => Promise<void>;
+}
+
 function FinishOrderButton({
     setIsShowing,
     orderId,
     refreshOrders
-}: {
-    setIsShowing: React.Dispatch<React.SetStateAction<string>>;
-    orderId: number;
-    refreshOrders: () => Promise<void>;
-}) {
+}: FinishOrderButtonProps) {
 
     const click = async () => {
-        try {
-            const { error } = await supabase
-                .from('orders')
-                .update({
-                    status_id: OrderStatus.PickedUp,
-                    time_picked_up: new Date()
-                })
-                .eq('order_id', orderId);
-            if (error) {
-                console.log(`Error updating order status for order num ${orderId}`, error);
-            } else {
-                await refreshOrders();
-                setIsShowing("list");
-            }
+        const updateData = {
+            status_id: OrderStatus.PickedUp,
+            time_picked_up: new Date()
         }
-        catch (err) {
-            console.log("Error running update button click", err);
+        const didOrderUpdate = await updateOrderStatus(orderId, updateData);
+        if (didOrderUpdate) {
+            await refreshOrders();
+            setIsShowing(CookDashboardView.List);
         }
     }
 

@@ -47,3 +47,9 @@ export function lastUpdateTime(order: Order): string {
     }
     return time ? time.toLocaleTimeString() : "Error: No Time";
 }
+
+export enum CookDashboardView {
+    List = "list",
+    Details = "details",
+    Finish = "finish"
+}

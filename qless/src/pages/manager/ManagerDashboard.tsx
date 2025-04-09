@@ -4,7 +4,7 @@ import TruckManagement from "../../components/manager/TruckManagement";
 import MenuManagement from '../../components/manager/MenuManagement';
 import EmployeeManagement from '../../components/manager/EmployeeManagement';
 import ManagerDashboardNav from '../../components/manager/ManagerDashboardNav';
-import { getManager } from '../../service/supabaseService';
+import { getUser } from '../../service/supabaseService';
 import type { User } from '../../App';
 
 
@@ -17,12 +17,14 @@ function ManagerDashboard() {
 
     useEffect(() => {
         const fetchManager = async () => {
-            const user: User | null = await getManager();
-            if(!user){
+            const user: User | null = await getUser();
+            if(!user || !user.is_manager){
+                console.log(user ? `${user.email} authorization denied: non-manager.\nRedirecting to login...`: "No user found. Redirecting to login...");
                 navigate('/');
             }
             else{
-                setManager(user);
+                    console.log(`${user.email} authorization confirmed: manager.`);
+                    setManager(user);
             }
         }
         fetchManager();

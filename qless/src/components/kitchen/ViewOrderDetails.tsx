@@ -1,29 +1,37 @@
 import "../../styles/kitchen/cookDashboard.css";
-import { Order, OrderDetail, OrderStatus } from "../../App";
-import { getListDetails, getOrderStatus, UpdateOrderStatusButton, lastUpdateTime, formatPhoneNumber } from "../../pages/kitchen/CookDashboard";
+import { Order, OrderDetail } from "../../App";
+import { UpdateOrderStatusButton } from "./UpdateOrderStatusButton";
 import { useState, useEffect } from "react";
+import { OrderStatus } from "../../service/orderStatusService";
+import { CookDashboardView, getListDetails } from "../../service/cookDashboardService";
+import { OrderSummary } from "./OrderSummary";
+
+type ViewOrderDetailsProps = {
+    orders: Order[];
+    orderStatusFilter: OrderStatus;
+    currentOrder: Order | undefined;
+    orderDetails: OrderDetail[];
+    setIsShowing: React.Dispatch<React.SetStateAction<CookDashboardView>>;
+    setOrderNum: React.Dispatch<React.SetStateAction<number>>;
+    refreshOrders: () => Promise<void>;
+    setOrderStatusFilter: React.Dispatch<React.SetStateAction<OrderStatus>>;
+}
 
 export default function ViewOrderDetails({
     orders,
-    orderStatus,
+    orderStatusFilter,
     currentOrder,
     orderDetails,
-    setIsShowing: setIsShowing,
-    setOrderNum: setOrderNum,
-    refreshOrders
-}: {
-    orders: Order[];
-    orderStatus: OrderStatus;
-    currentOrder: Order | undefined;
-    orderDetails: OrderDetail[];
-    setIsShowing: React.Dispatch<React.SetStateAction<string>>;
-    setOrderNum: React.Dispatch<React.SetStateAction<number>>;
-    refreshOrders: () => Promise<void>;
-}) {
+    setIsShowing,
+    setOrderNum,
+    refreshOrders,
+    setOrderStatusFilter: setOrderStatusFilter
+}: ViewOrderDetailsProps) {
 
     if (currentOrder === undefined) {
-        console.log("Invalid order");
-        setIsShowing("list");
+        console.log("Order undefined");
+        setIsShowing(CookDashboardView.List);
+        setOrderStatusFilter(OrderStatus.Ready);
         return;
     }
 
@@ -31,21 +39,13 @@ export default function ViewOrderDetails({
     const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
     useEffect(() => {
         setFilteredOrders(orders.filter(order =>
-            order.status_id <= orderStatus
+            order.status_id <= orderStatusFilter
         ));
-    }, [currentOrder]);
+    }, [currentOrder, orders, orderStatusFilter]);
 
 
-    //maps order details
+    //get order details
     const listDetails = getListDetails(orderDetails, true);
-
-    //handles "View All Orders" button
-    function handleViewAllButton() {
-        const click = () => {
-            setIsShowing("list");
-        }
-        return click;
-    }
 
     return (
         <>
@@ -54,12 +54,7 @@ export default function ViewOrderDetails({
             </div>
             <div className="cookDashRight">
                 <div className="details">
-                    <ol>
-                        <li>Order Number: {currentOrder.order_id}</li>
-                        <li>Order Status: {getOrderStatus(currentOrder.status_id)}</li>
-                        <li>Last Update: {lastUpdateTime(currentOrder)}</li>
-                        <li>Phone Number: {formatPhoneNumber(currentOrder)}</li>
-                    </ol>
+                    <OrderSummary order={currentOrder} />
                 </div>
                 <div className="detailsButtons">
                     <UpdateOrderStatusButton
@@ -81,7 +76,7 @@ export default function ViewOrderDetails({
                             setOrderNum={setOrderNum}
                         />
                     </div>
-                    <button className="bigDetailsButton" onClick={handleViewAllButton()}>View All Orders</button>
+                    <button className="bigDetailsButton" onClick={() => setIsShowing(CookDashboardView.List)}>View All Orders</button>
                 </div>
             </div>
         </>
@@ -89,21 +84,18 @@ export default function ViewOrderDetails({
 }
 
 
-
-
-
-
+type DetailsPageButtonProps = {
+    filteredOrders: Order[];
+    currentOrder: Order;
+    setOrderNum: React.Dispatch<React.SetStateAction<number>>;
+}
 
 //previous details button
 function PrevDetailsPageButton({
     filteredOrders,
     currentOrder,
     setOrderNum
-}: {
-    filteredOrders: Order[];
-    currentOrder: Order;
-    setOrderNum: React.Dispatch<React.SetStateAction<number>>
-}) {
+}: DetailsPageButtonProps) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const curOrderIndex: number = filteredOrders.indexOf(currentOrder);
 
@@ -131,12 +123,11 @@ function PrevDetailsPageButton({
 }
 
 //next details button
-function NextDetailsPageButton({ filteredOrders, currentOrder, setOrderNum }:
-    {
-        filteredOrders: Order[];
-        currentOrder: Order;
-        setOrderNum: React.Dispatch<React.SetStateAction<number>>;
-    }) {
+function NextDetailsPageButton({
+    filteredOrders,
+    currentOrder,
+    setOrderNum
+}: DetailsPageButtonProps) {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     const curOrderIndex: number = filteredOrders.indexOf(currentOrder);

@@ -1,12 +1,12 @@
 import type { User, Truck, InsertTruckDto, Menu, Product, Order } from '../App';
 import supabase from '../utils/supabase';
 
-export async function getManager(){
+export async function getUser() {
     const { data: authUser, error: authUserError } = await supabase.auth.getUser();
     if (authUserError) {
         console.log(`Error fetching the authenticated user: ${authUserError}`);
     }
-    else if (authUser){
+    else if (authUser) {
         console.log('User authentication confirmed.');
         const { data: userData, error: userError } = await supabase.from('user').select('*').eq("user_id", authUser.user.id);
         if (userError) {
@@ -15,13 +15,7 @@ export async function getManager(){
         else if (userData && userData.length > 0) {
             console.log('User found successfully.');
             const user: User = userData[0] as User;
-            if (user.is_manager){
-                console.log(`${user.email} authorization confirmed: manager.`);
-                return user;
-            }
-            else {
-                console.log(`${user.email} authorization denied: non-manager.\nRedirecting to login...`);
-            }
+            return user;
         }
         else {
             console.log(`An unexpected error occured trying to fetch the user.`);
@@ -34,33 +28,33 @@ export async function getManager(){
 };
 
 
-export async function signIn(email:string, password:string){
+export async function signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password
     });
-    if (data.user !== null && data.session !== null){
+    if (data.user !== null && data.session !== null) {
         console.log(`successfully logged in ${data.user.user_metadata.first_name}`);
         const { data: userData, error: userError } = await supabase.from("user").select('*').eq("user_id", data.user.id);
-        if (userData !== null){
+        if (userData !== null) {
             const loggedUser: User = userData[0];
             return loggedUser;
         }
-        else if (userError){
+        else if (userError) {
             console.log('Could not get loggedUser')
         }
     }
-    else if (error !== null){
+    else if (error !== null) {
         console.log(`Error logging in that user: ${error.code}`);
     }
-    else{
+    else {
         console.log(`An unexpected error occured during the login process.`);
     }
     return null;
 };
 
-export async function signUp(email: string, password: string, firstName: string, lastName: string){
-    try{
+export async function signUp(email: string, password: string, firstName: string, lastName: string) {
+    try {
         const { data, error } = await supabase.auth.signUp(
             {
                 email: email,
@@ -81,22 +75,22 @@ export async function signUp(email: string, password: string, firstName: string,
         else if (error) {
             console.log("Error while signing up: ", error.code, error.message);
         }
-        else{
+        else {
             console.log("An unexpected error occured during the sign up process.");
         }
     }
-    catch (err){
+    catch (err) {
         console.log("Unable to complete sign up request... ", err);
     }
     return null;
 };
 
-export async function getTrucks(manager_id: string){
+export async function getTrucks(manager_id: string) {
     const { data, error } = await supabase.from('truck').select().eq("manager_id", manager_id);
     if (error) {
         console.log(`Error fetching trucks: ${error.code}.`);
     }
-    else if (data){
+    else if (data) {
         const truckList: Truck[] = data.map(truck => ({
             truck_id: truck.truck_id,
             truck_name: truck.truck_name,
@@ -113,12 +107,12 @@ export async function getTrucks(manager_id: string){
     return null;
 };
 
-export async function getMenus(manager_id: string){
+export async function getMenus(manager_id: string) {
     const { data, error } = await supabase.from('menu').select().eq("manager_id", manager_id);
     if (error) {
         console.log(`Error fetching menus: ${error.code}.`);
     }
-    else if (data){
+    else if (data) {
         const menuList: Menu[] = data as Menu[];
         return menuList;
     }
@@ -131,8 +125,8 @@ export async function getMenus(manager_id: string){
 
 
 export async function uploadTruckImage(file: File, manager_id: string) {
-const now = new Date();
-const isoTimestamp = now.toISOString();
+    const now = new Date();
+    const isoTimestamp = now.toISOString();
     const filePath = `/truck-images/manager-${manager_id}/uploaded-${isoTimestamp}`;
     const { data: response, error } = await supabase.storage.from('trucks').upload(filePath, file);
     if (error) {
@@ -144,98 +138,98 @@ const isoTimestamp = now.toISOString();
         console.log("successfully stored image!");
         console.log(response);
         const { data: pubUrl } = supabase.storage.from('trucks').getPublicUrl(response.path);
-    
+
         console.log(pubUrl);
         return pubUrl.publicUrl
 
     }
 };
 
-export async function postTruck(newTruck: InsertTruckDto){
+export async function postTruck(newTruck: InsertTruckDto) {
     const { data, error } = await supabase.from("truck").insert(newTruck).select("*");
-    if (error){
+    if (error) {
         console.log(`Error inserting truck ${newTruck.truck_name}`);
         return null
     }
-    else if (data && data.length > 0){
+    else if (data && data.length > 0) {
         const newTruck = data[0] as Truck;
         return newTruck;
     }
-    else{
+    else {
         console.log("An unexpected error occurred while inserting truck: ", newTruck.truck_name);
         return null
     }
 
 }
 
-export async function getTruckById(truck_id: number){
+export async function getTruckById(truck_id: number) {
     const { data, error } = await supabase.from('truck').select("*").eq("truck_id", truck_id);
     if (error) {
         console.log(`Error getting truck ${truck_id}: `, error);
         return null;
     }
-    else if(data && data.length > 0){
+    else if (data && data.length > 0) {
         return data[0] as Truck;
     }
-    else{
+    else {
         console.log("An unexpected error occurred while fetching truck with id=", truck_id);
         return null;
     }
 };
 
-export async function getMenuById(menu_id: number){
+export async function getMenuById(menu_id: number) {
     const { data, error } = await supabase.from('menu').select("*").eq("menu_id", menu_id);
-    if (error){
+    if (error) {
         console.log("Error occurred while getting the menu with id ", menu_id, error);
         return null;
     }
-    else if(data && data.length > 0){
+    else if (data && data.length > 0) {
         return data[0] as Menu;
     }
-    else{
+    else {
         console.log("An unexpected error occurred while getting the menu with id ", menu_id);
         return null;
     }
-} 
+}
 
-export async function getProducts(menu_id: number){
+export async function getProducts(menu_id: number) {
     const { data, error } = await supabase.from('product').select("*").eq("menu_id", menu_id);
-    if (error){
+    if (error) {
         console.log(`Error getting products for menu ${menu_id}: ${error.message}`);
         return null;
     }
-    else if (data){
+    else if (data) {
         return data as Product[];
     }
-    else{
+    else {
         console.log(`Unexpected error while getting products for menu ${menu_id}.`);
         return null;
     }
 }
 
-export async function uploadQrCode(truck_id: number, blob: Blob){
+export async function uploadQrCode(truck_id: number, blob: Blob) {
     const fileName = `truck-${truck_id}.png`;
     // Upload to Supabase Storage (upsert allows overwriting)
     const { data, error } = await supabase.storage
-      .from("qr-codes")
-      .upload(fileName, blob);
+        .from("qr-codes")
+        .upload(fileName, blob);
 
     if (error) throw error;
-    else if (data){
+    else if (data) {
         console.log(`QR code generated and uploaded successfully`);
     }
 
     // Get the public URL
     const { data: publicUrlData } = supabase.storage
-      .from("qr-codes")
-      .getPublicUrl(fileName);
+        .from("qr-codes")
+        .getPublicUrl(fileName);
 
     return publicUrlData.publicUrl; // Return the QR Code's public URL
 }
 
 //in progress
-export async function updateTruck(updatedTruck: Truck){
-    
+export async function updateTruck(updatedTruck: Truck) {
+
     const { error } = await supabase
         .from('truck')
         .update({
@@ -245,13 +239,13 @@ export async function updateTruck(updatedTruck: Truck){
             menu_id: updatedTruck.menu_id,
         })
         .eq("truck_id", updatedTruck.truck_id);
-    if (error){
+    if (error) {
         console.log(`Error updating truck ${updatedTruck.truck_id}: ${error.message}`);
     }
 
 }
 
-export async function getOrders(){
+export async function getOrders() {
     try {
         const { data, error } = await supabase.from('orders').select();
         if (data) {
@@ -259,10 +253,10 @@ export async function getOrders(){
             orderList.sort((a, b) => a.order_id - b.order_id);
             return orderList;
         }
-        else if (error){
+        else if (error) {
             console.log("Error in getOrders: ", error);
         }
-        else{
+        else {
             console.log("Unexpected error in getOrders...");
         }
     } catch (err) {
@@ -270,3 +264,22 @@ export async function getOrders(){
     }
     return null;
 }
+
+export async function updateOrderStatus(orderId: number, updateData: Partial<Order>): Promise<boolean | undefined> {
+    try {
+        const { error } = await supabase
+            .from('orders')
+            .update(updateData)
+            .eq('order_id', orderId);
+        if (error) {
+            console.log(`Error updating order status for order num ${orderId}`, error);
+
+        } else {
+            return true;
+        }
+    }
+    catch (err) {
+        console.log("Exception thrown in updateOrderStatus", err);
+    }
+}
+

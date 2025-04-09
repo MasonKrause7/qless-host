@@ -1,31 +1,52 @@
 import ListOrders from '../../components/kitchen/ListOrders';
 import '../../styles/kitchen/cookDashboard.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import supabase from '../../utils/supabase';
 import { useNavigate } from 'react-router-dom';
 import ViewOrderDetails from '../../components/kitchen/ViewOrderDetails';
-import { Order, OrderDetail } from '../../App';
+import { Order, OrderDetail, Truck, User } from '../../App';
 import { OrderStatus } from '../../service/orderStatusService';
 import FinishOrder from '../../components/kitchen/FinishOrder';
-import { getOrders } from '../../service/supabaseService';
-import ErrorMessage from '../../components/commonUI/ErrorMessage'; 
+import { getUser, getOrders, getTrucks } from '../../service/supabaseService';
+import ErrorMessage from '../../components/commonUI/ErrorMessage';
+import { CookDashboardView } from '../../service/cookDashboardService';
 
 
 export default function CookDashboard() {
-    const [isShowing, setIsShowing] = useState("list");
+    const [isShowing, setIsShowing] = useState<CookDashboardView>(CookDashboardView.List);
     const [orderNum, setOrderNum] = useState(0);
     const [orders, setOrders] = useState<Order[]>([]);
     const [orderDetails, setOrderDetails] = useState<OrderDetail[]>([]);
     const [currentOrder, setCurrentOrder] = useState<Order>();
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [orderStatusFilter, setOrderStatusFilter] = useState(OrderStatus.Ready);
+    const [trucks, setTrucks] = useState<Truck[]>([]);
+    const [selectedTruckId, setSelectedTruckId] = useState<number | 'all' | null>(null);
     const navigate = useNavigate();
 
-    //pulls orders from db and saves as array in the orders state
+
+    //create truck list
+    const availableTrucks = useMemo(() => {
+        const trucks = Array.from(new Set(orders.map(o => o.truck_id)));
+        return trucks.sort((a, b) => a - b);//sort by truck id
+    }, [orders])
+
+    //set the first truck to default
     useEffect(() => {
+        if (availableTrucks.length > 0 && selectedTruckId === null)
+            setSelectedTruckId(availableTrucks[0]);
+    }, [availableTrucks, selectedTruckId]);
+    //on mount
+    useEffect(() => {
+        
+        //TODO: grab the truck user is assigned to from truck_assginment and use it to set selectedTruckId if they are not a manager
+
+
         //verify that user is authenticated, if not reroute to login page
         const checkAuth = async () => {
-            const { error } = await supabase.auth.getUser();
-            if (error) {
+            const user: User | null = await getUser();
+            if (!user) {
+                console.log("No user found. Redirecting to login...");
                 navigate("/");
             }
         }
@@ -33,27 +54,41 @@ export default function CookDashboard() {
 
         fetchOrders();//use on mount
 
+        const fetchTrucks = async () => {
+            const user = await getUser();
+            if (user) {
+                const truckList = await getTrucks(user.user_id);
+                if (truckList) {
+                    truckList.sort((a, b) => a.truck_name.localeCompare(b.truck_name));
+                    setTrucks(truckList);
+                }
+            }
+        }
+        fetchTrucks();
+
     }, [navigate]);
+
+
 
     //pull orders from the database and store in "orders" state
     const fetchOrders = async () => {
         let orderList: Order[] = []
         setErrorMessage("");
         const potentialOrderList: Order[] | null = await getOrders();
-        if (!potentialOrderList){
+        if (!potentialOrderList) {
             console.log("Error fetching orders");
             setErrorMessage("There was an error fetching your orders.");
         }
-        else if (potentialOrderList.length === 0){
+        else if (potentialOrderList.length === 0) {
             //handle the case where there are no orders with a default message
 
         }
-        else{
+        else {
             orderList = potentialOrderList;
             setOrders(orderList);
             setOrderNum(orderList[0].order_id);
         }
-        
+
     }
 
     //updates the orders
@@ -61,19 +96,20 @@ export default function CookDashboard() {
         setErrorMessage("");
         let orderList: Order[] = [];
         const potentialOrderList: Order[] | null = await getOrders();
-        if (!potentialOrderList){
+        if (!potentialOrderList) {
             console.log("Error refreshing orders");
             setErrorMessage("Error refreshing orders, please refresh the page. If the problem persists, logout and try again.");
         }
-        else if(potentialOrderList.length === 0){
-            //handle this with a default, "you dont have any orders"
-
+        else if (potentialOrderList.length === 0) {
+            setOrders([]);
+            setCurrentOrder(undefined);
         }
-        else{
+        else {
             orderList = potentialOrderList;
+            setOrders(orderList);
             const updatedCurrent = orderList.find(i => i.order_id === orderNum);
             if (updatedCurrent) setCurrentOrder(updatedCurrent);
-        }       
+        }
     };
 
     //pull order details from db whenever order num changes
@@ -114,126 +150,38 @@ export default function CookDashboard() {
     return (
         <div className="pageContainer">
             <div className='cookDashContainer'>
-                {isShowing === "list" && <ListOrders
+                {isShowing === CookDashboardView.List && <ListOrders
                     setIsShowing={setIsShowing}
                     setOrderNum={setOrderNum}
                     orders={orders}
-                    orderStatus={OrderStatus.Ready}
+                    orderStatusFilter={orderStatusFilter}
                     refreshOrders={refreshOrders}
+                    setOrderStatusFilter={setOrderStatusFilter}
+                    trucks={trucks}
+                    selectedTruckId={selectedTruckId}
+                    setSelectedTruckId={setSelectedTruckId}
                 />}
 
-                {isShowing === "details" && <ViewOrderDetails
+                {isShowing === CookDashboardView.Details && <ViewOrderDetails
                     orders={orders}
-                    orderStatus={OrderStatus.Ready}
+                    orderStatusFilter={orderStatusFilter}
                     currentOrder={currentOrder}
                     orderDetails={orderDetails}
                     setIsShowing={setIsShowing}
                     setOrderNum={setOrderNum}
                     refreshOrders={refreshOrders}
+                    setOrderStatusFilter={setOrderStatusFilter}
                 />}
 
-                {isShowing === "finish" && <FinishOrder
+                {isShowing === CookDashboardView.Finish && <FinishOrder
                     setIsShowing={setIsShowing}
                     orderDetails={orderDetails}
                     currentOrder={currentOrder}
                     refreshOrders={refreshOrders}
+                    setOrderStatusFilter={setOrderStatusFilter}
                 />}
             </div>
-            {errorMessage !== "" && <ErrorMessage message={errorMessage}/>}
+            {errorMessage !== "" && <ErrorMessage message={errorMessage} />}
         </div>
     )
 }
-
-
-
-
-
-
-export function UpdateOrderStatusButton({
-    className,
-    currentOrder,
-    refreshOrders,
-    setIsShowing,
-    setOrderNum
-}: {
-    className: string;
-    currentOrder: Order;
-    refreshOrders: () => Promise<void>;
-    setIsShowing: React.Dispatch<React.SetStateAction<string>>;
-    setOrderNum: React.Dispatch<React.SetStateAction<number>>
-}) {
-    const [currentStatus, setCurrentStatus] = useState<OrderStatus>(OrderStatus.Received);
-    const isButtonDisabled: boolean = currentStatus >= 4;
-
-    //when the current order updates, change the current status to reflect new order
-    useEffect(() => {
-        setCurrentStatus(currentOrder.status_id);
-    }, [currentOrder]);
-
-    //handle click
-    const click = async () => {
-        const newStatus = getNextStatus(currentStatus);
-        if (!newStatus) return;
-
-        //if status is Ready, switch view to FinishOrder
-        if (newStatus === OrderStatus.PickedUp) {
-            setOrderNum(currentOrder.order_id);
-            setIsShowing("finish");
-            return;
-        }
-
-        //otherwise, update
-        const updateData: Partial<Order> = { status_id: newStatus };
-        if (newStatus === OrderStatus.BeingCooked)
-            updateData.time_being_cooked = new Date();
-        else if (newStatus === OrderStatus.Ready)
-            updateData.time_ready = new Date();
-        try {
-            const { error } = await supabase
-                .from('orders')
-                .update(updateData)
-                .eq('order_id', currentOrder.order_id);
-            if (error) {
-                console.log(`Error updating order status for order num ${currentOrder.order_id}`, error);
-            } else {
-                setCurrentStatus(newStatus);
-                await refreshOrders();
-
-
-            }
-        }
-        catch (err) {
-            console.log("Error running update button click", err);
-        }
-    }
-
-    return <button
-        onClick={click}
-        className={className}
-        disabled={isButtonDisabled}
-    >
-        {getStatusText(currentStatus)}
-    </button>
-}
-
-const getStatusText = (status: OrderStatus) => {
-    switch (status) {
-        case OrderStatus.Received: return "Start Cooking";
-        case OrderStatus.BeingCooked: return "Mark as Ready";
-        case OrderStatus.Ready: return "Finish Order";
-        case OrderStatus.PickedUp: return "Order Completed";
-        default: return "Invalid Status";
-    }
-};
-
-const getNextStatus = (status: OrderStatus): OrderStatus | null => {
-    switch (status) {
-        case OrderStatus.Received: return OrderStatus.BeingCooked;
-        case OrderStatus.BeingCooked: return OrderStatus.Ready;
-        case OrderStatus.Ready: return OrderStatus.PickedUp;
-        case OrderStatus.PickedUp: return null; // no further status
-        default: return null;
-    }
-};
-
-
