@@ -1,4 +1,4 @@
-import type { User, Truck, InsertTruckDto, Menu, Product, Order } from '../App';
+import type { User, Truck, InsertTruckDto, Menu, Product, Order, OrderDetail } from '../App';
 import supabase from '../utils/supabase';
 
 export async function getUser() {
@@ -283,3 +283,50 @@ export async function updateOrderStatus(orderId: number, updateData: Partial<Ord
     }
 }
 
+export async function getEmployeeTruck(userId: string): Promise<number | null> {
+    try {
+        const { data, error } = await supabase.from('truck_assignment').select('truck_id').eq('employee_id', userId);
+        if (data) {
+            return parseInt(data[0].truck_id);
+        } else if (error) {
+            console.log("Error in getEmployeeTruck: ", error);
+        } else {
+            console.log("Unexpected error in getEmplyoeeTruck...");
+        }
+    } catch (err) {
+        console.log('Exception thrown in getEmployeeTruck', err);
+    }
+    return null;
+}
+
+export async function getOrderDetails(orderNum: number) {
+    if (orderNum !== 0) {
+        try {
+
+            const { data, error } = await supabase.from('order_product').select(`
+                        order_product_id,
+                        qty,
+                        product(
+                            product_name,
+                            price,
+                            image_path
+                        )`).eq('order_id', orderNum);
+            if (data) {
+                const currOrder: OrderDetail[] = data.map(detail => ({
+                    order_product_id: detail.order_product_id,
+                    qty: detail.qty,
+                    product: Array.isArray(detail.product) ? detail.product[0] : detail.product
+                }))
+                return currOrder;
+
+            } else if (error) {
+                console.log("Error in getOrderDetails: ", error);
+            } else {
+                console.log("Unexpected error in getOrderDetails...");
+            }
+        }
+        catch (err) {
+            console.log("Exception thrown in getORderDetails", err);
+        }
+    }
+}

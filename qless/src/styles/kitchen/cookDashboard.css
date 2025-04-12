@@ -1,14 +1,11 @@
-ol ul{
+ol,
+ul {
     list-style-type: none;
-    
-}
-
-ol{
-    padding-left: 0px;
+    padding-left: 0;
     margin: 0;
 }
 
-.cookDashContainer{
+.cookDashContainer {
     display: flex;
     flex-flow: row wrap;
     align-items: stretch;
@@ -16,76 +13,263 @@ ol{
 
 }
 
-.cookDashLeft{
+.cookDashLeft {
     order: 1;
     padding-right: 50px;
     flex-grow: 1;
     min-width: 400px;
 }
 
-.cookDashRight{
+.cookDashRight {
+    position: sticky;
+    top: 10px;
     order: 2;
     width: 300px;
-    height: 300px;
+    height: 345px;
     border: 2px solid var(--border-color);
     margin: 10px;
     padding: 10px;
+    border-radius: 8px;
+    background-color: var(--red);
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.45);
 }
 
-.cookFinishLeft{
-    order: 1;
-    padding-right: 50px;
+.cookDashRightInner {
+    background-color: rgba(255, 255, 255, 0.65);
+    padding: 20px;
+    border-radius: 8px;
+    height: 320px;
+}
+
+.cookDashRight h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: .5px;
+    font-family: var(--header-font);
+}
+
+.cookDashRight select {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-weight: 500;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.cookDashRight button {
+    background-color: black;
+    color: white;
     flex-grow: 1;
+    height: 35px;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    letter-spacing: .5px;
+    border-radius: 8px;
+    margin-top: 10px;
 }
 
-.cookFinishRight{
-    order: 2;
-    width: 250px;
-    height: 300px;
-    border: 2px solid var(--border-color);
-    margin: 10px;
-    padding: 10px;
+.cookDashRight button:not(:disabled):hover {
+    background-color: white;
+    color: black;
 }
 
-.orderList{
+.orderList {
     width: 300px;
     text-wrap: nowrap;
 }
-.listLeft ul li{
+
+.listLeft ul li {
     padding: 2px;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 4px;
 }
 
 .listItem {
-    display: block; 
-    width: 100%; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin: 10px;
     padding: 10px;
-    border: 2px solid var(--border-color); 
-    box-sizing: border-box; 
-    min-height: auto; 
+    border: 2px solid var(--border-color);
+    box-sizing: border-box;
+    flex-wrap: nowrap;
+    background-color: var(--red);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.45);
+    width: 525px;
 }
 
 .listLeft {
-    display: inline-block; 
-    width: 60%; 
-    padding-right: 20px; 
-    vertical-align: top; 
+    flex-grow: 1;
+    min-width: 250px;
+    padding-right: 20px;
+    color: black;
+}
+
+.listInnerBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.65);
+    border-radius: 8px;
+    padding: 20px;
+    gap: 20px;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.statusLabel {
+    margin-left: 5px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    letter-spacing: .5px;
+    border: 1px dashed;
+}
+
+.status-1 {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border-color: #1976d2;
+}
+
+.status-2 {
+    background-color: #fff3e0;
+    color: #e65100;
+    border-color: #fb8c00;
+}
+
+.status-3 {
+    background-color: #e8f5e9;
+    color: #1b5e20;
+    border-color: #388e3c;
+}
+
+.status-4 {
+    background-color: #f5f5f5;
+    color: #424242;
+    border-color: #757575;
 }
 
 .listRight {
-    display: inline-block; 
-    width: 150px; 
-    vertical-align: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 160px;
+    gap: 10px;
     margin-left: auto;
 }
 
 .listButton {
-    margin: 2.5%;
-    height: 25px;
-    width: 150px;
+    background-color: black;
+    color: white;
+    flex-grow: 1;
+    height: 35px;
+    width: 100%;
+    min-width: 120px;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    letter-spacing: .5px;
+    border-radius: 8px;
 }
 
-.detailImg img{
+.listButton:not(:disabled):hover {
+    background-color: white;
+    color: black;
+}
+
+.detailImg img {
     width: 50px;
     height: 50px;
+}
+
+.orderDetailItem {
+    display: flex;
+    align-items: flex-start;
+    background-color: rgba(255, 255, 255, 0.65);
+    padding: 10px 15px;
+    border-radius: 10px;
+    gap: 15px;
+    width: 100%;
+}
+
+.detailImg {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: white;
+}
+
+.detailText {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.detailName {
+    font-weight: 600;
+}
+
+.prevNextButton,
+.finishNavButtons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    border: none;
+    box-shadow: none;
+}
+
+.orderCost {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.costRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.totalRow {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.orderCost hr {
+    border: 1px solid black;
+}
+
+.costRow span:last-child {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-variant-numeric: tabular-nums;
 }

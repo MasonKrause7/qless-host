@@ -1,62 +1,69 @@
 import '../../styles/kitchen/cookDashboard.css';
-import { Order, Truck } from '../../App';
+import { Order, Truck, User } from '../../App';
 import { OrderStatus, getOrderStatus } from '../../service/orderStatusService';
 import { UpdateOrderStatusButton } from './UpdateOrderStatusButton';
 import supabase from '../../utils/supabase';
 import { CookDashboardView, lastUpdateTime } from '../../service/cookDashboardService';
+import { useNavigate } from 'react-router-dom';
 
 type ListOrdersProps = {
     setIsShowing: React.Dispatch<React.SetStateAction<CookDashboardView>>;
     setOrderNum: React.Dispatch<React.SetStateAction<number>>;
-    orders: Order[];
     orderStatusFilter: OrderStatus;
     refreshOrders: () => Promise<void>;
     setOrderStatusFilter: React.Dispatch<React.SetStateAction<OrderStatus>>;
     trucks: Truck[];
     selectedTruckId: number | 'all' | null;
     setSelectedTruckId: React.Dispatch<React.SetStateAction<number | "all" | null>>;
+    user: User | null;
+    filteredOrders: Order[];
 }
 
 export default function ListOrders({
     setIsShowing,
     setOrderNum,
-    orders,
     orderStatusFilter,
     refreshOrders,
     setOrderStatusFilter,
     trucks,
     selectedTruckId,
-    setSelectedTruckId
+    setSelectedTruckId,
+    user,
+    filteredOrders
 }: ListOrdersProps) {
 
+    const navigate = useNavigate();
 
-    //filter the order list to relevant orders
-    const orderList = orders.filter(order =>
-        order.status_id <= orderStatusFilter &&
-        (selectedTruckId === 'all' || selectedTruckId === null || order.truck_id === selectedTruckId)
-    );
 
     //map each order
-    const listItems = orderList.map(currentOrder =>
+    const listItems = filteredOrders.map(currentOrder =>
 
         <li className='listItem' key={currentOrder.order_id}>
-            <div className="listLeft">
-                <ul className='orderList'>
-                    <li>Order Number: {currentOrder.order_id}</li>
-                    <li>Time Submitted: {new Date(currentOrder.time_received).toLocaleTimeString()}</li>
-                    <li>Status: {getOrderStatus(currentOrder.status_id)}</li>
-                    <li>Last Update: {lastUpdateTime(currentOrder)}</li>
-                </ul>
-            </div>
-            <div className="listRight">
-                <button className='listButton' onClick={handleDetailsClick(currentOrder.order_id)}>View Details</button>
-                <UpdateOrderStatusButton
-                    className='listButton'
-                    currentOrder={currentOrder}
-                    refreshOrders={refreshOrders}
-                    setIsShowing={setIsShowing}
-                    setOrderNum={setOrderNum}
-                />
+            <div className="listInnerBox">
+                <div className="listLeft">
+                    <ul className='orderList'>
+                        <li><strong>Order Number:</strong> {currentOrder.order_id}</li>
+                        <li><strong>Time Submitted:</strong> {new Date(currentOrder.time_received).toLocaleTimeString()}</li>
+                        <li>
+                            <strong>Status: </strong>
+                            <span className={`statusLabel status-${currentOrder.status_id}`}>
+                                {getOrderStatus(currentOrder.status_id)}
+                            </span>
+                        </li>
+                        <li><strong>Last Update:</strong> {lastUpdateTime(currentOrder)}</li>
+                    </ul>
+                </div>
+
+                <div className="listRight">
+                    <button className='listButton' onClick={handleDetailsClick(currentOrder.order_id)}>View Details</button>
+                    <UpdateOrderStatusButton
+                        className='listButton'
+                        currentOrder={currentOrder}
+                        refreshOrders={refreshOrders}
+                        setIsShowing={setIsShowing}
+                        setOrderNum={setOrderNum}
+                    />
+                </div>
             </div>
         </li>
     );
@@ -77,32 +84,45 @@ export default function ListOrders({
     return (
         <>
             <div className="cookDashLeft">
-                {orderList.length === 0 ? <div className="listItem">No Orders in Queue</div> : <ol>{listItems}</ol>}
+                {filteredOrders.length === 0 ?
+                    <div className="listItem">
+                        <div className="listInnerBox">No Orders in Queue
+                        </div>
+                    </div> : <ol>{listItems}</ol>}
             </div>
             <div className="cookDashRight">
-                {trucks.length > 0 && <label htmlFor="truckFilter">Select Truck:</label>}
-                {selectedTruckId !== null && trucks.length > 0 && (
-                    <select
-                        name="truckFilter"
-                        id="truckFilter"
-                        value={selectedTruckId ?? ''}
-                        onChange={(e) =>
-                            setSelectedTruckId(e.target.value === 'all' ? 'all' : parseInt(e.target.value))
-                        }
-                    >
-                        <option value='all'>All Trucks</option>
-                        {trucks.map(truck => (
-                            <option key={truck.truck_id} value={truck.truck_id}>
-                                {truck.truck_name}
-                            </option>
-                        ))}
+                <div className="cookDashRightInner">
+                    <h3>Welcome, {user?.first_name}!</h3>
+                    {user?.is_manager ?
+                        <>
+                            <button onClick={() => navigate("/manage")}>Go To Manager Dashboard</button>
+                            <br />
+                        </> :
+                        <></>}
+                    {trucks.length > 0 && <label htmlFor="truckFilter">Select Truck:</label>}
+                    {selectedTruckId !== null && trucks.length > 0 && (
+                        <select
+                            name="truckFilter"
+                            id="truckFilter"
+                            value={selectedTruckId ?? ''}
+                            onChange={(e) =>
+                                setSelectedTruckId(e.target.value === 'all' ? 'all' : parseInt(e.target.value))
+                            }
+                        >
+                            <option value='all'>All Trucks</option>
+                            {trucks.map(truck => (
+                                <option key={truck.truck_id} value={truck.truck_id}>
+                                    {truck.truck_name}
+                                </option>
+                            ))}
 
-                    </select>
-                )}
-                <br />
-                <ViewPastOrders orderStatusFilter={orderStatusFilter} setOrderStatusFilter={setOrderStatusFilter} />
-                <p>Just For Testing</p>
-                <TempResetButton refreshOrders={refreshOrders} />
+                        </select>
+                    )}
+                    <br />
+                    <ViewPastOrders orderStatusFilter={orderStatusFilter} setOrderStatusFilter={setOrderStatusFilter} />
+                    <p>Just For Testing</p>
+                    <TempResetButton refreshOrders={refreshOrders} />
+                </div>
             </div>
         </>
     );

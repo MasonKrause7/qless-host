@@ -7,7 +7,7 @@ export function OrderSummary({ order }: { order: Order }) {
     return (
         <ol>
             <li>Order Number: {order.order_id}</li>
-            <li>Order Status: {getOrderStatus(order.status_id)}</li>
+            <li>Order Status: <span className={`statusLabel status-${order.status_id}`}>{getOrderStatus(order.status_id)}</span></li>
             <li>Last Update: {lastUpdateTime(order)}</li>
             <li>Phone Number: {formatPhoneNumber(order.customer_phone_number)}</li>
         </ol>

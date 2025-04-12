@@ -3,6 +3,7 @@ import { CookDashboardView, getListDetails } from '../../service/cookDashboardSe
 import { updateOrderStatus } from "../../service/supabaseService";
 import { OrderStatus } from "../../service/orderStatusService";
 import { OrderSummary } from "./OrderSummary";
+import { useEffect } from "react";
 
 type FinishOrderProps = {
     setIsShowing: React.Dispatch<React.SetStateAction<CookDashboardView>>;
@@ -20,12 +21,16 @@ export default function FinishOrder({
     setOrderStatusFilter
 }: FinishOrderProps) {
 
-    if (currentOrder === undefined) {
-        console.log("Order undefined");
-        setIsShowing(CookDashboardView.List);
-        setOrderStatusFilter(OrderStatus.Ready);
-        return;
-    }
+    useEffect(() => {
+        if (currentOrder === undefined) {
+            console.log("Order undefined");
+            setIsShowing(CookDashboardView.List);
+            setOrderStatusFilter(OrderStatus.Ready);
+        }
+    }, [currentOrder]);
+
+
+    if (currentOrder === undefined) return null;
 
     const listDetails = getListDetails(orderDetails, false);
     const subtotal: number = currentOrder.subtotal;
@@ -33,29 +38,40 @@ export default function FinishOrder({
     const total: number = subtotal + tax;
     return (
         <>
-            <div className="cookFinishLeft">
+            <div className="cookDashLeft">
                 <ol>{listDetails}</ol>
             </div>
-            <div className="cookFinishRight">
-                <div className="details">
-                    <OrderSummary order={currentOrder}/>
-                    <br />
-                    <ol>
-                        <li><h4>Subtotal: ${subtotal.toFixed(2)}</h4></li>
-                        <li><h4>Tax ({currentOrder.tax_rate * 100}%): ${tax.toFixed(2)}</h4></li>
-                        <hr />
-                        <li><h4>Total: ${total.toFixed(2)}</h4></li>
-                    </ol>
-                </div>
-                <div className="finishButtons">
-                    <FinishOrderButton
-                        setIsShowing={setIsShowing}
-                        orderId={currentOrder.order_id}
-                        refreshOrders={refreshOrders}
-                    />
-                    <div className="finishNavButtons">
-                        <button onClick={() => setIsShowing(CookDashboardView.Details)}>View Order Details</button>
-                        <button onClick={() => setIsShowing(CookDashboardView.List)}>View All Orders</button>
+            <div className="cookDashRight">
+                <div className="cookDashRightInner">
+                    <div className="orderDetails">
+                        <OrderSummary order={currentOrder} />
+                        <div className="orderCost">
+                            <div className="costRow">
+                                <span>Subtotal:</span>
+                                <span>${subtotal.toFixed(2)}</span>
+                            </div>
+                            <div className="costRow">
+                                <span>Tax ({currentOrder.tax_rate * 100}%):</span>
+                                <span>${tax.toFixed(2)}</span>
+                            </div>
+                            <hr />
+                            <div className="costRow totalRow">
+                                <span>Total:</span>
+                                <span>${total.toFixed(2)}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div className="finishButtons">
+                        <FinishOrderButton
+                            setIsShowing={setIsShowing}
+                            orderId={currentOrder.order_id}
+                            refreshOrders={refreshOrders}
+                        />
+                        <div className="finishNavButtons">
+                            <button onClick={() => setIsShowing(CookDashboardView.Details)}>View Details</button>
+                            <button onClick={() => setIsShowing(CookDashboardView.List)}>View All Orders</button>
+                        </div>
                     </div>
                 </div>
             </div>
