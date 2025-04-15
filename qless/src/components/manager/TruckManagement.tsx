@@ -144,16 +144,10 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
             }
         }
 
-        setCreatingTruck(false);
-
-
-        
+        setCreatingTruck(false);       
 
     }
 
-    
-
-    
 
     return (
         <>

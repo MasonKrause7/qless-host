@@ -330,3 +330,24 @@ export async function getOrderDetails(orderNum: number) {
         }
     }
 }
+
+export const updateTruckMenu = async (truckId: number, menuId: number | null): Promise<Truck | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('truck')
+        .update({ menu_id: menuId })
+        .eq('truck_id', truckId)
+        .select('*')
+        .single();
+  
+      if (error) {
+        console.error('Error updating truck menu:', error);
+        return null;
+      }
+  
+      return data as Truck;
+    } catch (error) {
+      console.error('Exception when updating truck menu:', error);
+      return null;
+    }
+  };
