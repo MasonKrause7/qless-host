@@ -72,6 +72,9 @@ const MenuManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
                         <form className='createProductForm'></form>
 
                         <h5>Add Existing Product</h5>
+                        <ul>
+                            {/* map existing products */}
+                        </ul>
 
                     </div>
                     <button type='submit'>Submit</button>
