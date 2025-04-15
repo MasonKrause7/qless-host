@@ -53,6 +53,11 @@ export async function signIn(email: string, password: string) {
     return null;
 };
 
+export async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) console.log("Error signing out: ", error);
+}
+
 export async function signUp(email: string, password: string, firstName: string, lastName: string) {
     try {
         const { data, error } = await supabase.auth.signUp(
@@ -172,6 +177,7 @@ export async function getTruckById(truck_id: number) {
         return data[0] as Truck;
     }
     else {
+        console.trace("getTruckById() trace for truck_id=", truck_id);
         console.log("An unexpected error occurred while fetching truck with id=", truck_id);
         return null;
     }

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
-    getUser, getTrucks, getEmployeeTruck, getTruckById,
+     getTrucks, getEmployeeTruck, getTruckById,
     getOrders, getOrderDetails
 } from "../service/supabaseService";
-import { Order, OrderDetail, Truck, User } from "../App";
+import { Order, OrderDetail, Truck } from "../App";
 import { OrderStatus } from "../service/orderStatusService";
 import { CookDashboardView } from "../service/cookDashboardService";
+import { useUser } from "./UserContext";
 
 export function useCookDashboard(isShowing: CookDashboardView) {
     const [orderNum, setOrderNum] = useState<number>(0);
@@ -17,28 +17,17 @@ export function useCookDashboard(isShowing: CookDashboardView) {
     const [orderStatusFilter, setOrderStatusFilter] = useState(OrderStatus.Ready);
     const [trucks, setTrucks] = useState<Truck[]>([]);
     const [selectedTruckId, setSelectedTruckId] = useState<number | 'all' | null>(null);
-    const [user, setUser] = useState<User | null>(null);
     const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
 
-    const navigate = useNavigate();
+    const {user} = useUser();
+
 
     //on mount
     useEffect(() => {
 
-        //verify that user is authenticated, if not reroute to login page
-        const checkAuth = async () => {
-            const user = await getUser();
-            if (!user) {
-                console.log("No user found. Redirecting to login...");
-                navigate("/");
-            }
-            else setUser(user);
-        }
-        checkAuth();
+        fetchOrders();
 
-        fetchOrders();//use on mount
-
-    }, [navigate]);
+    }, []);
 
 
     //pull orders from the database and store in "orders" state
@@ -73,7 +62,7 @@ export function useCookDashboard(isShowing: CookDashboardView) {
                 }
             } else {//if they are not a manager, find their truck
                 const truckNum = await getEmployeeTruck(user.user_id);
-                if (truckNum) {
+                if (truckNum && user.is_manager) {
                     const userTruck = await getTruckById(truckNum);
                     if (userTruck) {
                         const truckArray: Truck[] = [userTruck];
@@ -122,7 +111,6 @@ export function useCookDashboard(isShowing: CookDashboardView) {
     }, [orders, orderStatusFilter, selectedTruckId, orderNum]);
 
     return {
-        user,
         orders,
         filteredOrders,
         setOrderNum,
