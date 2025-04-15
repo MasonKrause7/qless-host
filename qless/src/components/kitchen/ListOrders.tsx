@@ -120,8 +120,8 @@ export default function ListOrders({
                     )}
                     <br />
                     <ViewPastOrders orderStatusFilter={orderStatusFilter} setOrderStatusFilter={setOrderStatusFilter} />
-                    <p>Just For Testing</p>
-                    <TempResetButton refreshOrders={refreshOrders} />
+                    {/* <TempResetButton refreshOrders={refreshOrders} /> */}
+                    <button onClick={() => {refreshOrders()}}>Refresh Orders</button>
                 </div>
             </div>
         </>
