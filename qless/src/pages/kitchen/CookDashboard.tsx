@@ -6,13 +6,13 @@ import FinishOrder from '../../components/kitchen/FinishOrder';
 import ErrorMessage from '../../components/commonUI/ErrorMessage';
 import { CookDashboardView } from '../../service/cookDashboardService';
 import { useCookDashboard } from '../../hooks/useCookDashboard';
+import { useUser } from '../../hooks/UserContext';
 
 
 export default function CookDashboard() {
     const [isShowing, setIsShowing] = useState<CookDashboardView>(CookDashboardView.List);
     
     const {
-        user,
         orders,
         filteredOrders,
         setOrderNum,
@@ -26,6 +26,8 @@ export default function CookDashboard() {
         errorMessage,
         refreshOrders
       } = useCookDashboard(isShowing);
+
+      const {user} = useUser();
 
 
     //create truck list

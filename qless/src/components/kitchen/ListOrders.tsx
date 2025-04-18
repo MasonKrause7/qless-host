@@ -4,7 +4,6 @@ import { OrderStatus, getOrderStatus } from '../../service/orderStatusService';
 import { UpdateOrderStatusButton } from './UpdateOrderStatusButton';
 import supabase from '../../utils/supabase';
 import { CookDashboardView, lastUpdateTime } from '../../service/cookDashboardService';
-import { useNavigate } from 'react-router-dom';
 
 type ListOrdersProps = {
     setIsShowing: React.Dispatch<React.SetStateAction<CookDashboardView>>;
@@ -31,9 +30,6 @@ export default function ListOrders({
     user,
     filteredOrders
 }: ListOrdersProps) {
-
-    const navigate = useNavigate();
-
 
     //map each order
     const listItems = filteredOrders.map(currentOrder =>
@@ -93,12 +89,6 @@ export default function ListOrders({
             <div className="cookDashRight">
                 <div className="cookDashRightInner">
                     <h3>Welcome, {user?.first_name}!</h3>
-                    {user?.is_manager ?
-                        <>
-                            <button onClick={() => navigate("/manage")}>Go To Manager Dashboard</button>
-                            <br />
-                        </> :
-                        <></>}
                     {trucks.length > 0 && <label htmlFor="truckFilter">Select Truck:</label>}
                     {selectedTruckId !== null && trucks.length > 0 && (
                         <select

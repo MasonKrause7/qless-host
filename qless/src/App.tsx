@@ -7,22 +7,30 @@ import CustomerInterface from './pages/customer/CustomerInterface';
 import TruckView from './pages/manager/TruckView';
 import './styles/global.css';
 import { OrderStatus } from './service/orderStatusService';
-import { StrictMode } from 'react';
+import Header from './components/commonUI/Header';
+import ProtectedRoute from './components/commonUI/ProtectedRoute';
+import RedirectIfAuthenticated from './components/commonUI/RedirectIfAuthenticated';
 
 function App() {
 
 
   return (
+    <>
+      <Header />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<RedirectIfAuthenticated><LandingPage /></RedirectIfAuthenticated>} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/customer" element={<CustomerInterface />} />
 
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="*" element={<NotFound />} />
-      <Route path="/manage" element={<ManagerDashboard />} />
-      <Route path="/manage/truck" element={<TruckView  />} />
-      <Route path="/cook" element={<StrictMode><CookDashboard /></StrictMode>} />
-      <Route path="/customer" element={<CustomerInterface />} />
-    </Routes>
-
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/manage" element={<ManagerDashboard />} />
+          <Route path="/manage/truck" element={<TruckView />} />
+          <Route path="/cook" element={<CookDashboard />} />
+        </Route>
+      </Routes>
+    </>
   )
 }
 
