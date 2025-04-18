@@ -23,3 +23,9 @@
     align-items: center;
     justify-content: center;
 }
+
+
+.buttonGroup{
+    display: flex;
+    align-items: center;
+}

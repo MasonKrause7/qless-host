@@ -6,6 +6,7 @@ import EmployeeManagement from '../../components/manager/EmployeeManagement';
 import ManagerDashboardNav from '../../components/manager/ManagerDashboardNav';
 import { getUser } from '../../service/supabaseService';
 import type { User } from '../../App';
+import '../../styles/manager/managerDashboard.css'
 
 
 

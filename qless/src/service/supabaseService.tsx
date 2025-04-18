@@ -309,6 +309,7 @@ export async function getOrderDetails(orderNum: number) {
                         product(
                             product_name,
                             price,
+                            description,
                             image_path
                         )`).eq('order_id', orderNum);
             if (data) {
@@ -326,7 +327,7 @@ export async function getOrderDetails(orderNum: number) {
             }
         }
         catch (err) {
-            console.log("Exception thrown in getORderDetails", err);
+            console.log("Exception thrown in getOrderDetails", err);
         }
     }
 }

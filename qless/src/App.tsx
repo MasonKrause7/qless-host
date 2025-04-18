@@ -103,6 +103,15 @@ export type Product = {
 export type ProductDto = {
   product_name: string,
   price: number,
+  description: string,
   image_path: string
 }
+export type ProductTempDto = {
+  product_name: string,
+  price: number,
+  description: string,
+  image: Blob | null,
+  temp_url: string | null
+}
+
 

@@ -2,6 +2,15 @@
     display: flex;
     flex-wrap: wrap;
 }
+button{
+    padding: 10px;
+    margin: 5px;
+}
+button:hover{
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
 
 
 .managerDashboardNav ul{
@@ -51,14 +60,20 @@
     flex-wrap: wrap;
     list-style: none;
 }
+.truckCardButton{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
 .lastTruckCard{
     border: 1px dotted black;
     display: flex;
     flex-direction: column;
     margin: 15px;
     padding: 10px;
-    width: 200px;
-    height: 200px;
+    width: 230px;
+    height: 300px;
     align-items: center;
     justify-content: center;
 }
@@ -68,9 +83,9 @@
     display: flex;
     flex-direction: column;
     margin: 15px;
-    padding: 10px;
-    width: 200px;
-    height: 250px;
+    padding: 5px;
+    width: 230px;
+    height: 300px;
     align-items: center;
 }
 .cardImgContainer{
@@ -87,7 +102,12 @@
     border-radius: 50%;
 }
 .cardContainer button{
-    width: 50%;
+    width: 75%;
+}
+.pendingProducts{
+    display: flex;
+    list-style: none;
+    flex-wrap: wrap;
 }
 
 .createForm{
