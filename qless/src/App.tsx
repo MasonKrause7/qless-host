@@ -10,6 +10,7 @@ import { OrderStatus } from './service/orderStatusService';
 import Header from './components/commonUI/Header';
 import ProtectedRoute from './components/commonUI/ProtectedRoute';
 import RedirectIfAuthenticated from './components/commonUI/RedirectIfAuthenticated';
+import { CustomerOrderProvider } from './hooks/CustomerOrderContext';
 
 function App() {
 
@@ -19,9 +20,17 @@ function App() {
       <Header />
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<RedirectIfAuthenticated><LandingPage /></RedirectIfAuthenticated>} />
+        <Route path="/" element={
+          <RedirectIfAuthenticated>
+            <LandingPage />
+          </RedirectIfAuthenticated>
+        } />
         <Route path="*" element={<NotFound />} />
-        <Route path="/customer" element={<CustomerInterface />} />
+        <Route path="/customer" element={
+          <CustomerOrderProvider>
+            <CustomerInterface />
+          </CustomerOrderProvider>
+        } />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
@@ -114,3 +123,7 @@ export type ProductDto = {
   image_path: string
 }
 
+export type CartItem = {
+  product_id: number,
+  qty: number
+}
