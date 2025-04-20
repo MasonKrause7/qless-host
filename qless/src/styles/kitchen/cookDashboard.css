@@ -269,7 +269,9 @@ button:disabled {
     border: 1px solid black;
 }
 
-.costRow span:last-child {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-variant-numeric: tabular-nums;
+.detailPrice {
+    margin-left: auto;
+    font-weight: 600;
+    font-size: 1rem;
+    align-self: flex-start;
 }

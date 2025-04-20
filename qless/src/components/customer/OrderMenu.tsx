@@ -1,43 +1,56 @@
-import "../../styles/customer/OrderMenu.css";
-import ErrorMessage from "../commonUI/ErrorMessage";
 import ItemCard from "./ItemCard";
 import { useCustomerOrder } from "../../hooks/CustomerOrderContext";
+import { CustomerInterfaceView } from "../../service/customerInterfaceService";
 
 
 type OrderMenuProps = {
-
+    setIsShowing: React.Dispatch<React.SetStateAction<CustomerInterfaceView>>;
 }
 
 export default function OrderMenu({
-
+    setIsShowing
 }: OrderMenuProps) {
 
     const {
-        menu,
+        truck,
         products,
-        errorMessage
+        cart
     } = useCustomerOrder();
 
 
     return (
-        <div className="order-menu-container">
-            <h1>Order Menu for </h1>
-            <h2>{menu === null ? "Invalid Truck ID" : menu.menu_name}</h2>
-            <p>Welcome! Choose your food items here.</p>
-            {<ErrorMessage message={errorMessage} />}
-            <div>
-                <ul>
-                    {products.map(product => (
-                        <li
-                            key={product.product_id}
-                        >
-                            <ItemCard product={product} />
-                        </li>
-                    ))}
-                </ul>
+        <div className="orderMenuContainer">
+            <div className="cartStickyWrapper">
+                <button
+                    className="viewCartButton"
+                    onClick={() => setIsShowing(CustomerInterfaceView.Cart)}
+                    disabled={cart.length === 0}
+                >
+                    Cart
+                </button>
             </div>
-        </div>
 
+            <div className="orderMenuHeader">
+                <div className="orderMenuHeaderInner">
+                    <h1>Menu for </h1>
+                    <h2>{truck ? truck.truck_name : "Invalid Truck ID"}</h2>
+                    <p>Welcome! Choose your food items below:</p>
+                </div>
+            </div>
+
+            <ul className="itemCardContainer">
+                {products.map((product) => (
+                    <li key={product.product_id}>
+                        <ItemCard
+                            product={product}
+                            itemQty={
+                                cart.find((item) => item.product.product_id === product.product_id)?.qty
+                            }
+                        />
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
 

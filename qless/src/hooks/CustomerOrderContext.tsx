@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CartItem, Menu, Order, Product, Truck } from "../App";
-import { getMenuById, getProducts, getTruckById } from "../service/supabaseService";
+import { getMenuById, getProducts, getTruckById, uploadCart, uploadNewOrder } from "../service/supabaseService";
 import { OrderStatus } from "../service/orderStatusService";
 
-//!!!IMPORTANT!!! Tax rate is set in this file!!
+//!!!IMPORTANT!!! Tax rate is set staically in this file!!
 
 
 type CustomerOrderContextType = {
@@ -16,8 +16,9 @@ type CustomerOrderContextType = {
     order: Partial<Order>;
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
     addPhoneToOrder: (phone: string) => void;
-    addItemToCart: (productId: number, qty: number, price: number) => void
-    removeItemFromCart: (productId: number, qty: number, price: number) => void
+    addItemToCart: (product: Product, qty: number) => void;
+    removeItemFromCart: (product: Product, qty: number) => void;
+    submitOrder: () => Promise<boolean>;
 }
 
 const CustomerOrderContext = createContext<CustomerOrderContextType | undefined>(undefined);
@@ -95,8 +96,7 @@ export function CustomerOrderProvider({ children }: { children: React.ReactNode 
                     setErrorMessage(`Could not get the products for menu ${menu.menu_id}`);
                     return;
                 }
-                const filteredProducts = potentialProducts.filter(item => item.is_available === true);
-                setProducts(filteredProducts);
+                setProducts(potentialProducts);
             }
         }
         fetchProducts();
@@ -109,14 +109,14 @@ export function CustomerOrderProvider({ children }: { children: React.ReactNode 
         }));
     }
 
-    const addItemToCart = (productId: number, qty: number, price: number) => {
+    const addItemToCart = (product: Product, qty: number) => {
         const newItem: CartItem = {
-            product_id: productId,
+            product: product,
             qty: qty
         };
 
         setCart(prevCart => {
-            const existingItemIndex = prevCart.findIndex(item => item.product_id === productId);
+            const existingItemIndex = prevCart.findIndex(item => item.product.product_id === product.product_id);
 
             if (existingItemIndex !== -1) {
                 // if item already exists... update quantity
@@ -135,33 +135,56 @@ export function CustomerOrderProvider({ children }: { children: React.ReactNode 
         //always update subtotal
         setOrder(prev => ({
             ...prev,
-            subtotal: Number(((prev.subtotal ?? 0) + (price * qty)).toFixed(2))
+            subtotal: Number(((prev.subtotal ?? 0) + (product.price * qty)).toFixed(2))
         }));
     }
 
-    const removeItemFromCart = (productId: number, qty: number, price: number) => {
+    const removeItemFromCart = (product: Product, qty: number) => {
         setCart(prevCart => {
-            const existingItem = prevCart.find(item => item.product_id === productId);
+            const existingItem = prevCart.find(item => item.product.product_id === product.product_id);
             if (!existingItem) return prevCart;
 
             if (existingItem.qty > qty) {
                 return prevCart.map(item =>
-                    item.product_id === productId
+                    item.product.product_id === product.product_id
                         ? { ...item, qty: item.qty - qty }
                         : item
                 );
             } else {
                 // remove item if qty reaches 0 or below
-                return prevCart.filter(item => item.product_id !== productId);
+                return prevCart.filter(item => item.product.product_id !== product.product_id);
             }
         });
 
         //update subtotal
         setOrder(prev => ({
             ...prev,
-            subtotal: Number(((prev.subtotal ?? 0) - (price * qty)).toFixed(2))
+            subtotal: Number(((prev.subtotal ?? 0) - (product.price * qty)).toFixed(2))
         }));
     }
+
+    const submitOrder = async () => {
+        setErrorMessage('');
+        const submittedOrder = await uploadNewOrder(order);
+        if (submittedOrder === undefined) {
+            setErrorMessage("Missing order data, could not create new order");
+            return false;
+        }
+
+        setOrder(prev => ({
+            ...prev,
+            order_id: submittedOrder.order_id
+        }));
+
+        const uploadedCartSuccess = await uploadCart(submittedOrder.order_id, cart);
+        if (uploadedCartSuccess) {
+            return true;
+        }
+        else {
+            setErrorMessage(errorMessage + "Unable to upload cart");
+            return false;
+        }
+    };
 
     return (
         <CustomerOrderContext.Provider value={{
@@ -174,7 +197,8 @@ export function CustomerOrderProvider({ children }: { children: React.ReactNode 
             setErrorMessage,
             addPhoneToOrder,
             addItemToCart,
-            removeItemFromCart
+            removeItemFromCart,
+            submitOrder
         }
         }>
             {children}

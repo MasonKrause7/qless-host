@@ -124,6 +124,7 @@ export type ProductDto = {
 }
 
 export type CartItem = {
-  product_id: number,
-  qty: number
+  product: Product,
+  qty: number,
+  
 }

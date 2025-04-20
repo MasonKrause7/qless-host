@@ -1,4 +1,4 @@
-import type { User, Truck, InsertTruckDto, Menu, Product, Order, OrderDetail } from '../App';
+import type { User, Truck, InsertTruckDto, Menu, Product, Order, OrderDetail, CartItem } from '../App';
 import supabase from '../utils/supabase';
 
 export async function getUser() {
@@ -332,7 +332,45 @@ export async function getOrderDetails(orderNum: number) {
             }
         }
         catch (err) {
-            console.log("Exception thrown in getORderDetails", err);
+            console.log("Exception thrown in getOrderDetails", err);
         }
     }
+}
+
+export async function uploadNewOrder(order: Partial<Order>) {
+    order.time_received = new Date();
+    if (
+        order.subtotal === null ||
+        order.tax_rate === null ||
+        order.customer_phone_number === null ||
+        order.status_id === null ||
+        order.truck_id === null
+    ) {
+        console.log("Missing order data in uploadNewData");
+        return;
+    }
+    const { data, error } = await supabase.from('orders').insert(order).select();
+    if (error) {
+        console.log("Error in uploadNewOrder: ", error);
+    } else if (data.length > 0) {
+        return data[0] as Order;
+    } else {
+        console.log("Unexpected error in uploadNewOrder");
+    }
+}
+
+export async function uploadCart(orderId: number, cart: CartItem[]) {
+    let noError = true;
+    cart.forEach(async item => {
+        const { error } = await supabase.from('order_product').insert({
+            qty: item.qty,
+            order_id: orderId,
+            product_id: item.product.product_id
+        });
+        if (error){
+            console.log(`Error uploading ${item.product.product_name}`);
+            noError = false;
+        }
+    });
+    return noError;
 }

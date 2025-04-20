@@ -2,6 +2,8 @@ import { useState } from "react";
 import { CustomerInterfaceView } from "../../service/customerInterfaceService";
 import ErrorMessage from "../commonUI/ErrorMessage";
 import { useCustomerOrder } from "../../hooks/CustomerOrderContext";
+import "../../styles/customer/customerInterface.css"
+import "../../styles/global.css"
 
 
 type CustLandingProps = {
@@ -39,18 +41,27 @@ export default function CustLanding({
 
     return (
         <div className='custLandingContainer'>
-            {truck && <p>Welcome to {truck.truck_name}!</p>}
-            {truck && <img className='truckImgCustInterface' src={truck.image_path}></img>}
-            {truck && <p>Enter phone number to order:</p>}
-            {errorMessage !== "" && <ErrorMessage message={errorMessage} />}
-            <input
-                type="tel"
-                value={phoneNumber}
-                onChange={handleChange}
-                placeholder="123-456-7890"
-                maxLength={12}
-            />
-            <button onClick={handleSubmit}>Submit</button>
+            <div className="custInner">
+                {truck && <>
+                    <h1>Welcome to</h1>
+                    <h2>{truck.truck_name}</h2>
+                    <img
+                        className='truckImgCustInterface'
+                        src={truck.image_path === null ? "/src/defaultImgs/noimg.png" : truck.image_path}>
+                    </img>
+                    <p>Enter phone number to start order:</p>
+                </>}
+                {errorMessage !== "" && <ErrorMessage message={errorMessage} />}
+                <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={handleChange}
+                    placeholder="123-456-7890"
+                    maxLength={12}
+                    id="custPhone"
+                />
+                <button onClick={handleSubmit}>Submit</button>
+            </div>
         </div>
     );
 }
