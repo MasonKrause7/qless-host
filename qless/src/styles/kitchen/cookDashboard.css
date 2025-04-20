@@ -22,7 +22,7 @@ ul {
 
 .cookDashRight {
     position: sticky;
-    top: 10px;
+    top: 161px;
     order: 2;
     width: 300px;
     height: 345px;
@@ -267,6 +267,11 @@ button:disabled {
 
 .orderCost hr {
     border: 1px solid black;
+}
+
+.costRow span:last-child {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-variant-numeric: tabular-nums;
 }
 
 .detailPrice {

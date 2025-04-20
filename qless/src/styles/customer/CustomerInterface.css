@@ -77,24 +77,6 @@ h2 {
     text-align: center;
 }
 
-button {
-    background-color: black;
-    color: white;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    margin-top: 5px;
-}
-
-button:hover {
-    background-color: white;
-    color: black;
-}
-
 .orderMenuHeader,
 .orderDetailsHeader,
 .orderConfirmation {
