@@ -1,4 +1,4 @@
-import type { User, Truck, InsertTruckDto, Menu, Product, Order, OrderDetail } from '../App';
+import type { User, Truck, InsertTruckDto, Menu, Product, Order, OrderDetail, InsertMenuDto, InsertProductDto } from '../App';
 import supabase from '../utils/supabase';
 
 export async function getUser() {
@@ -58,8 +58,29 @@ export async function signOut() {
     if (error) console.log("Error signing out: ", error);
 }
 
-export async function signUp(email: string, password: string, firstName: string, lastName: string) {
+export async function signUp(email: string, password: string, firstName: string, lastName: string, isManager = false, preserveSession = false) {
     try {
+        // Store the current session if we need to preserve it
+        let currentUser = null;
+        let currentPassword = null;
+        
+        if (preserveSession) {
+            // Get the current user's email to log back in later
+            const { data: userData } = await supabase.auth.getUser();
+            if (userData && userData.user) {
+                currentUser = userData.user.email;
+                // We'll need to ask for the manager's password in the UI
+                // For now, we'll use sessionStorage
+                currentPassword = sessionStorage.getItem('managerPassword');
+                
+                if (!currentPassword) {
+                    console.log("No manager password found in session storage");
+                    // We'll handle this case in the UI
+                }
+            }
+        }
+        
+        // Regular sign up (this will sign out the current user)
         const { data, error } = await supabase.auth.signUp(
             {
                 email: email,
@@ -68,27 +89,46 @@ export async function signUp(email: string, password: string, firstName: string,
                     data: {
                         first_name: firstName,
                         last_name: lastName,
-                        is_manager: true
+                        is_manager: isManager
                     }
                 }
             }
         );
-        if (data.user !== null) {
-            console.log('Successfully signed up');
-            return data.user;
-        }
-        else if (error) {
+        
+        if (error) {
             console.log("Error while signing up: ", error.code, error.message);
+            return null;
         }
-        else {
-            console.log("An unexpected error occured during the sign up process.");
+        
+        if (data.user) {
+            console.log('Successfully signed up new user');
+            
+            // If we need to preserve the session, sign the manager back in
+            if (preserveSession && currentUser && currentPassword) {
+                console.log('Signing manager back in...');
+                
+                const { error: signInError } = await supabase.auth.signInWithPassword({
+                    email: currentUser,
+                    password: currentPassword
+                });
+                
+                if (signInError) {
+                    console.log("Error signing manager back in: ", signInError.message);
+                    // This is a problematic state - the manager is now logged out
+                    // We should handle this in the UI
+                }
+            }
+            
+            return data.user;
+        } else {
+            console.log("An unexpected error occurred during the sign up process.");
         }
     }
     catch (err) {
         console.log("Unable to complete sign up request... ", err);
     }
     return null;
-};
+}
 
 export async function getTrucks(manager_id: string) {
     const { data, error } = await supabase.from('truck').select().eq("manager_id", manager_id);
@@ -127,7 +167,95 @@ export async function getMenus(manager_id: string) {
     return null;
 };
 
+// New function to create a menu
+export async function createMenu(newMenuData: {
+    menu_name: string,
+    manager_id: string
+}): Promise<Menu | null> {
+    try {
+        const { data, error } = await supabase
+            .from('menu')
+            .insert(newMenuData)
+            .select('*')
+            .single();
+        
+        if (error) {
+            console.log(`Error creating menu: ${error.message}`);
+            return null;
+        }
+        
+        if (data) {
+            console.log(`Successfully created menu: ${data.menu_name}`);
+            return data as Menu;
+        }
+        
+        return null;
+    } catch (err) {
+        console.log("Exception thrown in createMenu", err);
+        return null;
+    }
+}
 
+// New function to upload product image
+export async function uploadProductImage(file: Blob, manager_id: string, menu_id: number): Promise<string | null> {
+    try {
+        const now = new Date();
+        const isoTimestamp = now.toISOString();
+        const filePath = `/product-images/manager-${manager_id}/menu-${menu_id}/uploaded-${isoTimestamp}`;
+        
+        const { data: response, error } = await supabase.storage
+            .from('products')
+            .upload(filePath, file);
+            
+        if (error) {
+            console.log("Error uploading product image: ", error.message);
+            return null;
+        }
+        
+        const { data: pubUrl } = supabase.storage
+            .from('products')
+            .getPublicUrl(response.path);
+            
+        console.log("Successfully stored product image:", pubUrl.publicUrl);
+        return pubUrl.publicUrl;
+    } catch (err) {
+        console.log("Exception thrown in uploadProductImage", err);
+        return null;
+    }
+}
+
+// New function to create a product
+export async function createProduct(productData: {
+    product_name: string,
+    price: number,
+    description: string,
+    image_path: string | null,
+    menu_id: number,
+    is_available: boolean
+}): Promise<Product | null> {
+    try {
+        const { data, error } = await supabase
+            .from('product')
+            .insert(productData)
+            .select('*')
+            .single();
+            
+        if (error) {
+            console.log(`Error creating product: ${error.message}`);
+            return null;
+        }
+        
+        if (data) {
+            console.log(`Successfully created product: ${data.product_name}`);
+            return data as Product;
+        }
+        
+        return null;
+    } catch (err) {
+        console.log("Exception thrown in createProduct", err);
+        return null;
+    }
+}
 
 export async function uploadTruckImage(file: File, manager_id: string) {
     const now = new Date();
@@ -358,3 +486,119 @@ export const updateTruckMenu = async (truckId: number, menuId: number | null): P
       return null;
     }
   };
+
+  // Add these functions to the existing supabaseService.tsx file
+
+// Function to update menu details
+export async function updateMenu(updatedMenu: Menu): Promise<Menu | null> {
+    try {
+        const { data, error } = await supabase
+            .from('menu')
+            .update({ menu_name: updatedMenu.menu_name })
+            .eq('menu_id', updatedMenu.menu_id)
+            .select('*')
+            .single();
+
+        if (error) {
+            console.log(`Error updating menu: ${error.message}`);
+            return null;
+        }
+
+        if (data) {
+            console.log(`Successfully updated menu: ${data.menu_name}`);
+            return data as Menu;
+        }
+
+        return null;
+    } catch (err) {
+        console.log("Exception thrown in updateMenu", err);
+        return null;
+    }
+}
+
+// Function to update product details
+export async function updateProduct(productId: number, productData: {
+    product_name?: string,
+    price?: number,
+    description?: string,
+    image_path?: string | null,
+    is_available?: boolean
+}): Promise<Product | null> {
+    try {
+        const { data, error } = await supabase
+            .from('product')
+            .update(productData)
+            .eq('product_id', productId)
+            .select('*')
+            .single();
+
+        if (error) {
+            console.log(`Error updating product: ${error.message}`);
+            return null;
+        }
+
+        if (data) {
+            console.log(`Successfully updated product: ${data.product_name}`);
+            return data as Product;
+        }
+
+        return null;
+    } catch (err) {
+        console.log("Exception thrown in updateProduct", err);
+        return null;
+    }
+}
+
+// Function to delete a product
+export async function deleteProduct(productId: number): Promise<boolean> {
+    try {
+        const { error } = await supabase
+            .from('product')
+            .delete()
+            .eq('product_id', productId);
+
+        if (error) {
+            console.log(`Error deleting product: ${error.message}`);
+            return false;
+        }
+
+        console.log(`Successfully deleted product with ID: ${productId}`);
+        return true;
+    } catch (err) {
+        console.log("Exception thrown in deleteProduct", err);
+        return false;
+    }
+}
+
+// Function to delete a menu and all associated products
+export async function deleteMenu(menuId: number): Promise<boolean> {
+    try {
+        // First delete all products associated with this menu
+        const { error: productsError } = await supabase
+            .from('product')
+            .delete()
+            .eq('menu_id', menuId);
+
+        if (productsError) {
+            console.log(`Error deleting menu products: ${productsError.message}`);
+            return false;
+        }
+
+        // Then delete the menu itself
+        const { error: menuError } = await supabase
+            .from('menu')
+            .delete()
+            .eq('menu_id', menuId);
+
+        if (menuError) {
+            console.log(`Error deleting menu: ${menuError.message}`);
+            return false;
+        }
+
+        console.log(`Successfully deleted menu with ID: ${menuId}`);
+        return true;
+    } catch (err) {
+        console.log("Exception thrown in deleteMenu", err);
+        return false;
+    }
+}
