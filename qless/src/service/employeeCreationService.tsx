@@ -10,12 +10,6 @@ export async function createEmployeeAssignment(
     const now = new Date();
     const isoDate = now.toISOString();
     
-    const newAssignment = {
-      truck_id: truckId,
-      employee_id: employeeId,
-      date_assigned: isoDate
-    };
-    
     // Use RPC to bypass RLS for this specific operation
     // This will allow the manager to create the assignment for the employee
     const { data, error } = await supabase.rpc('create_truck_assignment', {
@@ -85,8 +79,6 @@ export async function getAllEmployees(managerId: string): Promise<Employee[] | n
       return [];
     }
     
-    
-    
     // Map the joined data to our Employee type format
     const employees = assignments.map((assignment: any) => ({
       employee_id: assignment.employee_id,
@@ -116,6 +108,18 @@ export async function removeEmployeeAssignment(employeeId: string): Promise<bool
     if (error) {
       console.log(`Error removing employee assignment: ${error.message}`);
       return false;
+    }
+    
+    // Update the user's active status to false
+    const { error: userError } = await supabase
+      .from('user')
+      .update({ is_active: false })
+      .eq('user_id', employeeId);
+
+    if (userError) {
+      console.log('Error updating employee status:', userError.message);
+      // We'll still return true as the assignment was removed successfully
+      // The user record update is a secondary operation
     }
     
     return true;
@@ -155,5 +159,54 @@ export async function updateEmployeeAssignment(
   } catch (err) {
     console.log("Exception thrown in updateEmployeeAssignment", err);
     return null;
+  }
+}
+
+// Get all available trucks for a manager
+export async function getAvailableTrucks(managerId: string): Promise<any[] | null> {
+  try {
+    const { data, error } = await supabase
+      .from('truck')
+      .select('truck_id, truck_name')
+      .eq('manager_id', managerId);
+
+    if (error) {
+      console.log('Error fetching trucks:', error.message);
+      return null;
+    }
+
+    return data;
+  } catch (err) {
+    console.log('Exception thrown in getAvailableTrucks', err);
+    return null;
+  }
+}
+
+// Remove employee (combines removeEmployeeAssignment with additional user table update)
+export async function removeEmployee(employeeId: string): Promise<boolean> {
+  try {
+    // Use the existing function to remove the assignment
+    const assignmentRemoved = await removeEmployeeAssignment(employeeId);
+    
+    if (!assignmentRemoved) {
+      return false;
+    }
+    
+    console.log('Successfully removed employee');
+    return true;
+  } catch (err) {
+    console.log('Exception thrown in removeEmployee', err);
+    return false;
+  }
+}
+
+// Reassign employee (wrapper for updateEmployeeAssignment for consistency)
+export async function reassignEmployee(employeeId: string, truckId: number): Promise<boolean> {
+  try {
+    const result = await updateEmployeeAssignment(employeeId, truckId);
+    return result !== null;
+  } catch (err) {
+    console.log('Exception thrown in reassignEmployee', err);
+    return false;
   }
 }
