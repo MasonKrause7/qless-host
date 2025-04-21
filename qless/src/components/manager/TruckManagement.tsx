@@ -171,7 +171,9 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
             </div>
         </div>}
 
-        {creatingTruck && <div>
+        {creatingTruck && 
+        <div className="createTruckContainer">
+            <h3>Create New Food Truck</h3>
             <form 
                 onSubmit={(event) => createTruck(event)}
                 className='createForm'
@@ -184,7 +186,6 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
                     <label htmlFor="newTruckImg">Truck Image</label>
                     <input name='newTruckImg' type="file" accept="image/*" onChange={handleImageUpload} />
                 </div>
-                {previewURL && <img className='imagePreview' src={previewURL} alt='Truck Preview'></img>}
                 <div className='createFormInputGroup'>
                     <label htmlFor="menuSelect">Select Menu (Optional)</label>
                     <select 
@@ -201,13 +202,35 @@ const TruckManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
                         ))}
                     </select>
                 </div>
-                <div>
-                    <button type='submit'>Create Truck</button>
-                    <button onClick={()=>setCreatingTruck(false)}>Cancel</button>
+                
+                {previewURL && 
+                    <div className="imagePreviewContainer">
+                        <img 
+                            className='imagePreview' 
+                            src={previewURL} 
+                            alt='Truck Preview'
+                        />
+                    </div>
+                }
+                
+                <div className='formButtonGroup'>
+                    <button 
+                        type='button' 
+                        className='cancelButton'
+                        onClick={() => setCreatingTruck(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type='submit'
+                        className='submitButton'
+                    >
+                        Create Truck
+                    </button>
                 </div>
             </form>
-            
-        </div>}
+        </div>
+        }
         {errorMessage !== "" && <ErrorMessage message={errorMessage} />}
         </>
     )

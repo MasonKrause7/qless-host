@@ -1,267 +1,379 @@
 /* Common Card Styles */
 .truckCard, .menuCard {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-    width: 280px;
-    height: 400px;
-    font-family: 'Kanit', sans-serif;
-  }
-  
-  .truckCard:hover, .menuCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Truck Card Specific Styles */
-  .truckImageContainer {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 4px solid #f0f0f0;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .truckImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .truckName, .menuName {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 10px 0;
-    text-align: center;
-  }
-  
-  .truckButtonContainer, .menuButtonContainer {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-    margin: 10px 0;
-  }
-  
-  .qrCodeRow {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 10px;
-  }
-  
-  .qrCodeRow .secondaryButton {
-    flex: 1;
-  }
-  
-  .qrCodePreview {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 2px;
-  }
-  
-  /* Button Styles */
-  .primaryButton, .secondaryButton {
-    padding: 12px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s ease;
-    text-align: center;
-    font-family: 'Kanit', sans-serif;
-    font-size: 1rem;
-  }
-  
-  .primaryButton {
-    background-color: #C41E3A;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-  }
-  
-  .primaryButton:hover {
-    background-color: #f8f8f8;
-    color: black;
-  }
-  
-  .secondaryButton {
-    background-color: #f5f5f5;
-    color: black;
-    border: 1px solid #ccc;
-  }
-  
-  .secondaryButton:hover {
-    background-color: #e5e5e5;
-  }
-  
-  /* Dashboard Layout */
-  .truckCards, .menuCards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .lastTruckCard, .lastMenuCard {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    width: 280px;
-    height: 400px;
-    margin: 15px;
-  }
-  
-  .addTruckButton, .addMenuButton {
-    padding: 15px 30px;
-    background-color: white;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #555;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: 'Kanit', sans-serif;
-  }
-  
-  .addTruckButton:hover, .addMenuButton:hover {
-    background-color: #C41E3A;
-    color: white;
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: scale(1.05);
-  }
-  
-  .pageTitle {
-    font-family: 'Kanit', sans-serif;
-    margin: 20px 0;
-    font-size: 2rem;
-    color: black;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .truckCards, .menuCards {
-      justify-content: center;
-    }
-    
-    .truckCard, .menuCard, .lastTruckCard, .lastMenuCard {
-      width: 100%;
-      max-width: 320px;
-    }
-  }
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  width: 280px;
+  height: 400px;
+  font-family: 'Kanit', sans-serif;
+}
 
-  /* Existing Card Styles remain unchanged */
+.truckCard:hover, .menuCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Truck Card Specific Styles */
+.truckImageContainer {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 4px solid #f0f0f0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.truckImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.truckName, .menuName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.truckButtonContainer, .menuButtonContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.qrCodeRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.qrCodeRow .secondaryButton {
+  flex: 1;
+}
+
+.qrCodePreview {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 2px;
+}
+
+/* Button Styles */
+.primaryButton, .secondaryButton {
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  text-align: center;
+  font-family: 'Kanit', sans-serif;
+  font-size: 1rem;
+}
+
+.primaryButton {
+  background-color: #C41E3A;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.primaryButton:hover {
+  background-color: #f8f8f8;
+  color: black;
+}
+
+.secondaryButton {
+  background-color: #f5f5f5;
+  color: black;
+  border: 1px solid #ccc;
+}
+
+.secondaryButton:hover {
+  background-color: #e5e5e5;
+}
+
+/* Dashboard Layout */
+.truckCards, .menuCards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lastTruckCard, .lastMenuCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  width: 280px;
+  height: 400px;
+  margin: 15px;
+}
+
+.addTruckButton, .addMenuButton {
+  padding: 15px 30px;
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Kanit', sans-serif;
+}
+
+.addTruckButton:hover, .addMenuButton:hover {
+  background-color: #C41E3A;
+  color: white;
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+.pageTitle {
+  font-family: 'Kanit', sans-serif;
+  margin: 20px 0;
+  font-size: 2rem;
+  color: black;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .truckCards, .menuCards {
+    justify-content: center;
+  }
+  
+  .truckCard, .menuCard, .lastTruckCard, .lastMenuCard {
+    width: 100%;
+    max-width: 320px;
+  }
+}
 
 /* Manager Dashboard Navigation */
 .managerDashboardNavContainer {
-    margin: 20px 15px;
-    font-family: 'Kanit', sans-serif;
-  }
-  
-  .managerDashboardNav {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 25px;
-    padding: 0 10px;
-  }
-  
+  margin: 20px 15px;
+  font-family: 'Kanit', sans-serif;
+}
+
+.managerDashboardNav {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+  padding: 0 10px;
+}
+
+.managerDashboardNav ul {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+}
+
+.managerDashboardNav li {
+  margin: 0;
+  padding: 0;
+}
+
+.managerDashboardNavButton, 
+.managerDashboardNavButtonSelected {
+  padding: 15px 30px;
+  margin: 0 5px;
+  border: none;
+  background: none;
+  font-family: 'Kanit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.managerDashboardNavButton {
+  color: #555;
+}
+
+.managerDashboardNavButtonSelected {
+  color: #C41E3A;
+}
+
+.managerDashboardNavButton:hover {
+  color: #333;
+}
+
+/* Add underline for selected nav item */
+.managerDashboardNavButtonSelected::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 3px;
+  background-color: #C41E3A;
+  border-radius: 2px;
+}
+
+.welcomeMessage {
+  font-family: 'Kanit', sans-serif;
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.6rem;
+}
+
+.strong {
+  color: #C41E3A;
+}
+
+/* Image Preview Container Styles */
+.imagePreviewContainer {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.imagePreview {
+  max-width: 300px;
+  max-height: 200px;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Create Form Styles - Updated to match Employee and Menu forms */
+.createTruckContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.createForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 20px;
+  font-family: 'Kanit', sans-serif;
+}
+
+.createFormInputGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.createFormInputGroup label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #444;
+}
+
+.createFormInput,
+.createFormInputGroup input,
+.createFormInputGroup select {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.createFormInputGroup input[type="file"] {
+  padding: 8px;
+  border: 1px dashed #ccc;
+  background-color: #f0f0f0;
+}
+
+.formButtonGroup {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancelButton, .submitButton, .confirmButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: 'Kanit', sans-serif;
+  margin: 0 5px;
+}
+
+.cancelButton {
+  background-color: #f5f5f5;
+  color: #555;
+  border: 1px solid #ccc;
+}
+
+.cancelButton:hover {
+  background-color: #e8e8e8;
+}
+
+.confirmButton, .submitButton {
+  background-color: #C41E3A;
+  color: white;
+}
+
+.confirmButton:hover, .submitButton:hover {
+  background-color: #B01830;
+}
+
+.submitButton:disabled, .cancelButton:disabled, .confirmButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .managerDashboardNav ul {
-    display: flex;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    justify-content: center;
-  }
-  
-  .managerDashboardNav li {
-    margin: 0;
-    padding: 0;
+    flex-direction: column;
+    align-items: center;
   }
   
   .managerDashboardNavButton, 
   .managerDashboardNavButtonSelected {
-    padding: 15px 30px;
-    margin: 0 5px;
-    border: none;
-    background: none;
-    font-family: 'Kanit', sans-serif;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease;
+    padding: 12px 20px;
+    margin: 5px 0;
+    width: 100%;
   }
   
-  .managerDashboardNavButton {
-    color: #555;
-  }
-  
-  .managerDashboardNavButtonSelected {
-    color: #C41E3A;
-  }
-  
-  .managerDashboardNavButton:hover {
-    color: #333;
-  }
-  
-  /* Add underline for selected nav item */
   .managerDashboardNavButtonSelected::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    width: 80%;
-    height: 3px;
-    background-color: #C41E3A;
-    border-radius: 2px;
+    left: 25%;
+    width: 50%;
   }
   
-  .welcomeMessage {
-    font-family: 'Kanit', sans-serif;
-    text-align: center;
-    margin: 20px 0;
-    font-size: 1.6rem;
+  .createForm {
+    grid-template-columns: 1fr;
   }
   
-  .strong {
-    color: #C41E3A;
+  .formButtonGroup {
+    grid-column: span 1;
   }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .managerDashboardNav ul {
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    .managerDashboardNavButton, 
-    .managerDashboardNavButtonSelected {
-      padding: 12px 20px;
-      margin: 5px 0;
-      width: 100%;
-    }
-    
-    .managerDashboardNavButtonSelected::after {
-      left: 25%;
-      width: 50%;
-    }
-  }
+}

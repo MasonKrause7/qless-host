@@ -242,6 +242,7 @@ const MenuManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
             {/* Create menu view */}
             {creatingMenu && (
                 <div className='createMenuContainer'>
+                    <h3>Create New Menu</h3>
                     <form onSubmit={createMenu}
                           className='createForm'
                     >
@@ -258,10 +259,11 @@ const MenuManagement: React.FC<ManagementSubDashProps> = ({ manager }) => {
                         </div>
 
                         <p className='menuCreationInstructions'>
-                            Now that you've named your menu, add the products it will offer.
+                            Once you've named your menu, add the products it will offer.
                         </p>
                     </form>
                     <div className='addProductToMenuContainer'>
+                        <h4>Add Products to Menu</h4>
                         <form className='createProductForm'
                               onSubmit={handleNewProduct}
                               ref={productFormRef}
