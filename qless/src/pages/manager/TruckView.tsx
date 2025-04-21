@@ -17,6 +17,7 @@ const TruckView: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [manager, setManager] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -72,6 +73,7 @@ const TruckView: React.FC = () => {
 
         setIsLoading(true);
         setErrorMessage("");
+        setUpdateSuccess(false);
 
         try {
             // Update truck with new menu ID in database
@@ -93,6 +95,8 @@ const TruckView: React.FC = () => {
                 setCurrentMenu(newMenu);
             }
             
+            setUpdateSuccess(true);
+            
         } catch (error) {
             console.error("Error updating menu:", error);
             setErrorMessage("An error occurred while updating the menu. Please try again.");
@@ -101,41 +105,69 @@ const TruckView: React.FC = () => {
         }
     };
 
-    return (
-        <>
-            <div className='truckViewContainer'>
-                {truck && (<>
-                    <img className='truckViewImage' src={truck.image_path} alt="" />
-                    <h3>{truck.truck_name}</h3>
-                    <p>Current Menu: {currentMenu ? currentMenu.menu_name : "No menu assigned"}</p>
-                    <div className='selectorInputGroup'>
+    const handleBackClick = () => {
+        navigate('/manage');
+    };
 
-                        <label htmlFor="updatedMenuSelect">Update Menu</label>
-                        <select 
-                            id="updatedMenuSelect" 
-                            className='selectorUpdatedMenu' 
-                            value={selectedMenuId ?? ""} 
-                            onChange={(e) => setSelectedMenuId(e.target.value ? Number(e.target.value) : null)}
-                        >
-                            <option value="">No Menu</option> {/* Option for null */}
-                            {menus?.map((menu) => (
-                                <option key={menu.menu_id} value={menu.menu_id}>
-                                    {menu.menu_name}
-                                </option>
-                            ))}
-                        </select>
-                        <button 
-                            onClick={handleMenuChange} 
-                            disabled={isLoading}
-                        >
-                            {isLoading ? "Updating..." : "Change Menu"}
-                        </button>
-                    </div>
-                    
-                 </>)}
-                 { errorMessage !== "" && <ErrorMessage message={errorMessage}/> }
+    return (
+        <div className='truckViewPageContainer'>
+            <div className='truckViewHeader'>
+                <button className='backButton' onClick={handleBackClick}>
+                    ← Back to Dashboard
+                </button>
+                <h2>Truck Details</h2>
             </div>
-        </>
+            
+            <div className='truckViewContainer'>
+                {truck && (
+                    <div className='truckViewCard'>
+                        <div className='truckViewImageContainer'>
+                            <img className='truckViewImage' src={truck.image_path} alt={`${truck.truck_name} truck`} />
+                        </div>
+                        <h3 className='truckViewName'>{truck.truck_name}</h3>
+                        <div className='menuInfoBox'>
+                            <p className='currentMenuLabel'>Current Menu: 
+                                <span className='currentMenuValue'>
+                                    {currentMenu ? currentMenu.menu_name : "No menu assigned"}
+                                </span>
+                            </p>
+                        </div>
+                        
+                        <div className='selectorInputGroup'>
+                            <label htmlFor="updatedMenuSelect">Update Menu</label>
+                            <select 
+                                id="updatedMenuSelect" 
+                                className='selectorUpdatedMenu' 
+                                value={selectedMenuId ?? ""} 
+                                onChange={(e) => setSelectedMenuId(e.target.value ? Number(e.target.value) : null)}
+                            >
+                                <option value="">No Menu</option>
+                                {menus?.map((menu) => (
+                                    <option key={menu.menu_id} value={menu.menu_id}>
+                                        {menu.menu_name}
+                                    </option>
+                                ))}
+                            </select>
+                            <button 
+                                className='updateMenuButton'
+                                onClick={handleMenuChange} 
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Updating..." : "Change Menu"}
+                            </button>
+                            
+                            {updateSuccess && (
+                                <div className='successMessage'>
+                                    Menu updated successfully!
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+                {errorMessage !== "" && <ErrorMessage message={errorMessage}/>}
+            </div>
+        </div>
     )
 };
+
 export default TruckView;

@@ -1,33 +1,52 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import SignUpForm from '../../components/login-signup/SignUpForm';
-import LoginForm from '../../components/login-signup/LoginForm';
-import '../../styles/landing.css';
-import ErrorMessage from '../../components/commonUI/ErrorMessage';
+import { useState } from "react";
+import LoginForm from "../../components/login-signup/LoginForm";
+import SignUpForm from "../../components/login-signup/SignUpForm";
+import { Link } from "react-router-dom";
+import '../../styles//landing.css';
 
-
-
-
-function LandingPage() {
-  
-    const [loginShowing, setLoginShowing] = useState<boolean>(true);
-    
-
+const LandingPage = () => {
+    const [isLogin, setIsLogin] = useState(true);
 
     return (
-        <div className='pageContainer'>
-            <div className='tabContainer'>
-                <button className='tab' onClick={() => setLoginShowing(true)}>Login</button>
-                <button className='tab' onClick={() => setLoginShowing(false)}>Sign Up</button>
-            </div>
+        <div className="landing-container">
+            <div className="auth-container">
+                <h1 className="auth-title">
+                    {isLogin ? "Welcome Back" : "Get Started"}
+                </h1>
 
-            <div className='formContainer'> 
-                {loginShowing && <LoginForm />}
-                {!loginShowing && <SignUpForm setLoginShowing={setLoginShowing} />} 
+                {isLogin ? (
+                    <div className="auth-content">
+                        <LoginForm />
+                        <div className="auth-toggle">
+                            <p>Don't have an account?</p>
+                            <button 
+                                className="auth-button"
+                                onClick={() => setIsLogin(false)}
+                            >
+                                Sign Up
+                            </button>
+                        </div>
+                        <div className="reset-password-link">
+                            <Link to="/reset-password">Reset Password</Link>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="auth-content">
+                        <SignUpForm />
+                        <div className="auth-toggle">
+                            <p>Already have an account?</p>
+                            <button 
+                                className="auth-button"
+                                onClick={() => setIsLogin(true)}
+                            >
+                                Login
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
-    )
-}
-
+    );
+};
 
 export default LandingPage;

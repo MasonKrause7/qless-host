@@ -1,11 +1,12 @@
-
-.menuCards{
+/* Menu Card Layout */
+.menuCards {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
 }
-.menuCardContainer{
+
+.menuCardContainer {
     border: 1px dotted black;
     padding: 15px;
     margin: 10px;
@@ -13,19 +14,266 @@
     width: 150px;
     text-align: center;
 }
-.lastMenuCard{
-    border: 1px dotted black;
+
+
+.buttonGroup {
+    display: flex;
+    align-items: center;
+}
+
+/* Menu Creation Container */
+.createMenuContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menuCreationInstructions {
+    margin: 15px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Product Form */
+.addProductToMenuContainer {
+    margin-top: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.createProductForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.createProductForm .createFormInputGroup:nth-child(3),
+.createProductForm .createFormInputGroup:nth-child(4) {
+    grid-column: span 2;
+}
+
+.addProductButton {
+    grid-column: span 2;
+    background-color: #C41E3A;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.addProductButton:hover {
+    background-color: #B01830;
+}
+
+/* Pending Products Section */
+.pendingProductsContainer {
+    margin-top: 30px;
+}
+
+.pendingProductsContainer h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.pendingProducts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.pendingProductItem {
+    position: relative;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.pendingProductItem:hover {
+    transform: translateY(-3px);
+}
+
+/* Product Card Styling */
+.productCardContainer {
+    position: relative;
     padding: 15px;
-    margin: 10px;
-    height: 60px;
-    width: 150px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.productCardContent {
+    margin-top: 10px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.productName {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0;
+    color: #333;
+}
+
+.productPrice {
+    font-weight: bold;
+    color: #C41E3A;
+    margin: 5px 0;
+}
+
+.productDescription {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.productRemoveButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.productRemoveButton:hover {
+    opacity: 1;
+    background-color: #d32f2f;
 }
 
 
-.buttonGroup{
+.menuSubmitButtonsContainer {
     display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.cancelButton, .submitButton {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.cancelButton {
+    background-color: #f5f5f5;
+    color: #555;
+}
+
+.cancelButton:hover {
+    background-color: #e8e8e8;
+}
+
+.submitButton {
+    background-color: #C41E3A;
+    color: white;
+}
+
+.submitButton:hover {
+    background-color: #B01830;
+}
+
+.submitButton:disabled, .cancelButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+
+.menuIconContainer {
+    width: 200px;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
     align-items: center;
+    border: 4px solid #f0f0f0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.menuIcon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menuIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center; 
+}
+
+
+
+.menuButtonContainer .primaryButton {
+    background-color: #C41E3A;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: all 0.2s ease;
+}
+
+.menuButtonContainer .primaryButton:hover {
+    background-color: #f8f8f8;
+    color: black;
+}
+
+/* Product Card Image Container styling */
+.cardImgContainer {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+/* Product Card Image styling */
+.cardImgContainer img.card {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+}
+
+/* Optional hover effect */
+.cardImgContainer:hover img.card {
+    transform: scale(1.05);
+}
+
+/* Styles for pending product images */
+.pendingProductItem .cardImgContainer {
+    height: 160px;
 }

@@ -10,18 +10,29 @@ import { OrderStatus } from './service/orderStatusService';
 import Header from './components/commonUI/Header';
 import ProtectedRoute from './components/commonUI/ProtectedRoute';
 import RedirectIfAuthenticated from './components/commonUI/RedirectIfAuthenticated';
+import PasswordReset from './components/login-signup/PasswordReset';
+import PasswordResetConfirm from './pages/login-signup/PasswordResetConfirm';
+import { CustomerOrderProvider } from './hooks/CustomerOrderContext';
 
 function App() {
-
-
   return (
     <>
       <Header />
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<RedirectIfAuthenticated><LandingPage /></RedirectIfAuthenticated>} />
+        <Route path="/" element={
+          <RedirectIfAuthenticated>
+            <LandingPage />
+          </RedirectIfAuthenticated>
+        } />
         <Route path="*" element={<NotFound />} />
-        <Route path="/customer" element={<CustomerInterface />} />
+        <Route path="/customer" element={
+          <CustomerOrderProvider>
+            <CustomerInterface />
+          </CustomerOrderProvider>
+        } />
+        <Route path="/reset-password" element={<PasswordReset />} />
+        <Route path="/reset-password-confirm" element={<PasswordResetConfirm />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
@@ -122,4 +133,20 @@ export type ProductTempDto = {
   temp_url: string | null
 }
 
+export type InsertMenuDto = {
+  menu_name: string,
+  manager_id: string
+}
 
+export type InsertProductDto = {
+  product_name: string,
+  price: number,
+  description: string,
+  image_path: string | null,
+  menu_id: number,
+  is_available: boolean
+}export type CartItem = {
+  product: Product,
+  qty: number,
+  
+}

@@ -1,0 +1,355 @@
+/* Employee Management Container */
+.employeeManagementContainer {
+  padding: 20px;
+  font-family: 'Kanit', sans-serif;
+}
+
+/* Header section */
+.employeeManagementHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.addEmployeeButton {
+  padding: 12px 20px;
+  background-color: #C41E3A;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Kanit', sans-serif;
+  font-size: 1rem;
+}
+
+.addEmployeeButton:hover {
+  background-color: #f8f8f8;
+  color: black;
+}
+
+/* Employee Cards */
+.employeeCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.employeeCard {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.employeeCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.employeeDetails {
+  flex-grow: 1;
+  margin-bottom: 15px;
+}
+
+.employeeName {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.employeeEmail {
+  margin: 0 0 15px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.employeeTruckBadge {
+  display: inline-block;
+  background-color: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.truckLabel {
+  color: #666;
+  margin-right: 5px;
+  font-size: 0.9rem;
+}
+
+.truckName {
+  font-weight: bold;
+  color: #C41E3A;
+}
+
+.assignmentDate {
+  margin: 0;
+  color: #777;
+}
+
+.employeeActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.employeeActions button {
+  flex: 1;
+  margin: 0 5px;
+}
+
+.secondaryButton {
+  background-color: #f5f5f5;
+  color: black;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  text-align: center;
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.9rem;
+}
+
+.secondaryButton:hover {
+  background-color: #e5e5e5;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.noEmployeesMessage {
+  text-align: center;
+  padding: 40px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  color: #555;
+}
+
+.loadingMessage {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+/* Create Employee Form */
+.createEmployeeContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.createEmployeeForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.createFormInputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.createFormInputGroup label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #444;
+}
+
+.createFormInputGroup input,
+.createFormInputGroup select {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.formButtonGroup {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancelButton, .submitButton, .confirmButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: 'Kanit', sans-serif;
+}
+
+.cancelButton {
+  background-color: #f5f5f5;
+  color: #555;
+  border: 1px solid #ccc;
+}
+
+.cancelButton:hover {
+  background-color: #e8e8e8;
+}
+
+.confirmButton, .submitButton {
+  background-color: #C41E3A;
+  color: white;
+}
+
+.confirmButton:hover, .submitButton:hover {
+  background-color: #B01830;
+}
+
+.submitButton:disabled, .cancelButton:disabled, .confirmButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Message styles */
+.errorMessage {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.successMessage {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeMessage {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.closeMessage:hover {
+  opacity: 1;
+}
+
+.employeeCreationInstructions {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 4px;
+  border-left: 4px solid #C41E3A;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* Reassign Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: 'Kanit', sans-serif;
+}
+
+.modalContent {
+  background-color: white;
+  border-radius: 8px;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modalContent h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.formGroup {
+  margin: 20px 0;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #444;
+}
+
+.formGroup select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: 'Kanit', sans-serif;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .createEmployeeForm {
+    grid-template-columns: 1fr;
+  }
+  
+  .formButtonGroup {
+    grid-column: span 1;
+  }
+  
+  .employeeManagementHeader {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .modalContent {
+    width: 95%;
+    padding: 20px;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+  }
+  
+  .modalActions button {
+    width: 100%;
+  }
+}

@@ -10,7 +10,7 @@ type TruckCardProps = {
 const TruckCard: React.FC<TruckCardProps> = ({ truck }) => {
     const navigate = useNavigate();
     const viewTruck = () => {
-        navigate('/manage/truck', { state: { truck:truck } });
+        navigate('/manage/truck', { state: { truck: truck } });
     }
     
     const downloadQrCode = async () => {
@@ -39,17 +39,23 @@ const TruckCard: React.FC<TruckCardProps> = ({ truck }) => {
     };
 
     return (
-        <>
-            <div className='cardContainer'>
-                <div className='cardImgContainer'>
-                    <img src={truck.image_path}/>
-                </div>
-                <h5>{truck.truck_name}</h5>
-                <button className='truckCardButton' onClick={() => viewTruck()}>Manage Truck</button>
-                <button onClick={downloadQrCode}>Download QR Code</button>
-                <img className='qrPreview' src={truck.qr_code_path} alt="" />
+        <div className='truckCard'>
+            <div className='truckImageContainer'>
+                {truck.image_path ? (
+                    <img src={truck.image_path} alt={truck.truck_name} className="truckImage" />
+                ) : (
+                    <div className="noImagePlaceholder">No image yet</div>
+                )}
             </div>
-        </>
+            <h3 className='truckName'>{truck.truck_name}</h3>
+            <div className='truckButtonContainer'>
+                <button className='primaryButton' onClick={viewTruck}>Manage Truck</button>
+                <div className='qrCodeRow'>
+                    <button className='secondaryButton' onClick={downloadQrCode}>Download QR Code</button>
+                    <img className='qrCodePreview' src={truck.qr_code_path} alt="QR Code" />
+                </div>
+            </div>
+        </div>
     )
 }
 

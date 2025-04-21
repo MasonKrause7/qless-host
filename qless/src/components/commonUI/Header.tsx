@@ -14,6 +14,8 @@ export default function Header() {
     const isManager = user?.is_manager;
     const isOnManage = location.pathname.startsWith("/manage");
     const isOnCook = location.pathname.startsWith("/cook");
+    const isOnCustomer = location.pathname.startsWith("/customer");
+    const isOnLanding = location.pathname === "/";
 
     const handleDashboardSwitch = () => {
         if (isOnManage) navigate("/cook");
@@ -45,9 +47,14 @@ export default function Header() {
                 <p className="moto">Scan, Skip, Bam!</p>
             </div>
             <h3 className="queueless">Queueless</h3>
-            {user && <div className="userMenu" ref={menuRef}>
-                <button onClick={() => { setMenuOpen(!menuOpen) }}>☰</button>
-                {menuOpen &&
+            {<div className="userMenu" ref={menuRef}>
+                <button
+                    onClick={() => { setMenuOpen(!menuOpen) }}
+                    className={menuOpen ? "toggleMenu open" : "toggleMenu"}
+                >
+                    ☰
+                </button>
+                {menuOpen && user &&
                     <ul className='userMenuDropdown'>
                         <li><h3>Hello, {user.first_name}!</h3></li>
                         {isManager && (isOnManage || isOnCook) && (
@@ -60,6 +67,15 @@ export default function Header() {
                         <li><button>Settings</button></li>
                         <li><button onClick={logout}>Log Out</button></li>
                     </ul>
+                }
+                {menuOpen && !user && isOnCustomer &&
+                    <ul className='userMenuDropdown'>
+                        <li><button onClick={() => window.location.reload()}>Restart Order</button></li>
+                        <li><button onClick={() => navigate('/')}>Login</button></li>
+                    </ul>
+                }
+                {menuOpen && isOnLanding &&
+                    <p className='userMenuDropdown'>Please Login to Continue</p>
                 }
             </div>}
         </div>
