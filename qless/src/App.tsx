@@ -145,7 +145,8 @@ export type InsertProductDto = {
   image_path: string | null,
   menu_id: number,
   is_available: boolean
-}export type CartItem = {
+}
+export type CartItem = {
   product: Product,
   qty: number,
   
