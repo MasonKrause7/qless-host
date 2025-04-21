@@ -5,7 +5,7 @@ import {
     getOrdersByManagerId,
     getOrdersByEmployeeId
 } from "../service/supabaseService";
-import { Order, OrderDetail, Truck, User } from "../App";
+import { Order, OrderDetail, Truck } from "../App";
 import { OrderStatus } from "../service/orderStatusService";
 import { CookDashboardView } from "../service/cookDashboardService";
 import { useUser } from "./UserContext";
@@ -27,16 +27,16 @@ export function useCookDashboard(isShowing: CookDashboardView) {
     //on mount
     useEffect(() => {
         if (user){
-            fetchOrders(user);
+            fetchOrders();
         }
     }, [user]);
 
 
     //pull orders from the database and store in "orders" state
-    const fetchOrders = async (loggedUser: User) => {
+    const fetchOrders = async () => {
         let orderList: Order[] = []
         setErrorMessage("");
-
+        if(!user) return;
 
         /* Right here we just need to run a more specific query, 
             preferably through a function like getOrdersByUserId,
@@ -48,11 +48,11 @@ export function useCookDashboard(isShowing: CookDashboardView) {
         */
         let potentialOrderList: Order[] | null;
         
-        if (loggedUser.is_manager){
-            potentialOrderList = await getOrdersByManagerId(loggedUser.user_id);
+        if (user.is_manager){
+            potentialOrderList = await getOrdersByManagerId(user.user_id);
         }
         else{
-            potentialOrderList = await getOrdersByEmployeeId(loggedUser.user_id);
+            potentialOrderList = await getOrdersByEmployeeId(user.user_id);
         }
         
         if (!potentialOrderList) {
