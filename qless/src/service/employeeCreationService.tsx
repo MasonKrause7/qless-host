@@ -182,17 +182,42 @@ export async function getAvailableTrucks(managerId: string): Promise<any[] | nul
   }
 }
 
-// Remove employee (combines removeEmployeeAssignment with additional user table update)
+// Remove employee (deletes the employee's truck assignment, user record, and auth record)
 export async function removeEmployee(employeeId: string): Promise<boolean> {
   try {
-    // Use the existing function to remove the assignment
+    // First remove the truck assignment
     const assignmentRemoved = await removeEmployeeAssignment(employeeId);
     
     if (!assignmentRemoved) {
+      console.log('Failed to remove truck assignment');
       return false;
     }
     
-    console.log('Successfully removed employee');
+    // Delete the user record from the user table
+    const { error: deleteUserError } = await supabase
+      .from('user')
+      .delete()
+      .eq('user_id', employeeId);
+    
+    if (deleteUserError) {
+      console.log(`Error deleting user record: ${deleteUserError.message}`);
+      return false;
+    }
+    
+    // Delete the user from auth.users using the admin function
+    // This requires using an RPC that has been set up with admin privileges
+    const { error: deleteAuthError } = await supabase.rpc('delete_auth_user', {
+      p_user_id: employeeId
+    });
+    
+    if (deleteAuthError) {
+      console.log(`Error deleting auth user: ${deleteAuthError.message}`);
+      // Even if auth deletion fails, we've already removed the user from our app tables
+      // Consider whether to return false here or not depending on your requirements
+      return false;
+    }
+    
+    console.log('Successfully removed employee and deleted all user records');
     return true;
   } catch (err) {
     console.log('Exception thrown in removeEmployee', err);
