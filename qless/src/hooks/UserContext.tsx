@@ -11,7 +11,7 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export function UserProvider({children}: {children: React.ReactNode}){
+export function UserProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loadingUser, setLoadingUser] = useState<boolean>(true);
 
@@ -28,7 +28,7 @@ export function UserProvider({children}: {children: React.ReactNode}){
     const login = async (email: string, password: string): Promise<User | null> => {
         setLoadingUser(true);
         const loggedInUser = await signIn(email, password);
-        if(loggedInUser) setUser(loggedInUser);
+        if (loggedInUser) setUser(loggedInUser);
         setLoadingUser(false);
         return loggedInUser;
     };
@@ -39,15 +39,15 @@ export function UserProvider({children}: {children: React.ReactNode}){
     };
 
     return (
-        <UserContext.Provider value={{ user, loadingUser, login, logout}}>
+        <UserContext.Provider value={{ user, loadingUser, login, logout }}>
             {children}
         </UserContext.Provider>
     );
 }
 
-export function useUser(){
+export function useUser() {
     const context = useContext(UserContext);
-    if(context === undefined){
+    if (context === undefined) {
         throw new Error("useUser must be used with an UserProvider");
     }
     return context;

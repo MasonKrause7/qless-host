@@ -7,7 +7,7 @@ export const getListDetails = (orderDetails: OrderDetail[], hidePrice: boolean) 
             <div className="orderDetailItem">
                     <img
                         className="detailImg"
-                        src={detail.product.image_path.includes("/image/path") ?
+                        src={detail.product.image_path === null ?
                             "/src/defaultImgs/noimg.png" :
                             detail.product.image_path}
                         alt="Product Image"
