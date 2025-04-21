@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import {
      getTrucks, getEmployeeTruck, getTruckById,
-    getOrders, getOrderDetails
+     getOrderDetails,
+    getOrdersByManagerId,
+    getOrdersByEmployeeId
 } from "../service/supabaseService";
-import { Order, OrderDetail, Truck } from "../App";
+import { Order, OrderDetail, Truck, User } from "../App";
 import { OrderStatus } from "../service/orderStatusService";
 import { CookDashboardView } from "../service/cookDashboardService";
 import { useUser } from "./UserContext";
@@ -24,21 +26,44 @@ export function useCookDashboard(isShowing: CookDashboardView) {
 
     //on mount
     useEffect(() => {
-
-        fetchOrders();
-
-    }, []);
+        if (user){
+            fetchOrders(user);
+        }
+    }, [user]);
 
 
     //pull orders from the database and store in "orders" state
-    const fetchOrders = async () => {
+    const fetchOrders = async (loggedUser: User) => {
         let orderList: Order[] = []
         setErrorMessage("");
-        const potentialOrderList: Order[] | null = await getOrders();
+
+
+        /* Right here we just need to run a more specific query, 
+            preferably through a function like getOrdersByUserId,
+            or even more specific if we want getOrdersByEmployeeId and getOrdersByManagerId, depending on the user type.
+            
+            The reason is, RLS checks every row for authorization, which is much slower than a targeted query which can be optimized.
+            Also, if they are employee, we need to go through truck_assignments to get the truck_id for orders
+                    if they are manager, we need to go through trucks to get the truck_ids for orders.
+        */
+        let potentialOrderList: Order[] | null;
+        
+        if (loggedUser.is_manager){
+            potentialOrderList = await getOrdersByManagerId(loggedUser.user_id);
+        }
+        else{
+            potentialOrderList = await getOrdersByEmployeeId(loggedUser.user_id);
+        }
+        
         if (!potentialOrderList) {
             console.log("Error fetching orders");
             setErrorMessage("There was an error fetching your orders.");
-        } else {
+        }
+        else if(potentialOrderList.length === 0){
+            console.log("Order list is empty: ", potentialOrderList);
+            setErrorMessage("You don't have any past orders...")
+        }
+        else {
             orderList = potentialOrderList;
             setOrders(orderList);
             if (!orderList.find(o => o.order_id === orderNum)) {

@@ -132,12 +132,10 @@ export type ProductTempDto = {
   image: Blob | null,
   temp_url: string | null
 }
-
 export type InsertMenuDto = {
   menu_name: string,
   manager_id: string
 }
-
 export type InsertProductDto = {
   product_name: string,
   price: number,
@@ -146,6 +144,7 @@ export type InsertProductDto = {
   menu_id: number,
   is_available: boolean
 }
+
 export type CartItem = {
   product: Product,
   qty: number,

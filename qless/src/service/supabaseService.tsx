@@ -378,6 +378,92 @@ export async function updateTruck(updatedTruck: Truck) {
     }
 
 }
+export async function getOrdersByManagerId(managerId: string){  
+    try {
+        const { data: truckData, error: truckError } = await supabase
+            .from("truck")
+            .select("*")
+            .eq("manager_id", managerId);
+        if (truckError){
+            console.log("Error getting orders by manager id, failed to get truck data: ", truckError);
+            return null;
+        }
+        if (truckData){
+            if (truckData.length === 0){
+                console.log("gettingOrdersByManagerId is stopping because that manager has no trucks");
+                return [];
+            }
+            //now use truck_ids to get orders
+            const truck_ids: number[] = truckData.map(truck => (truck.truck_id));
+            const { data: orderData, error: orderError } = await supabase
+                .from("orders")
+                .select("*")
+                .in("truck_id", truck_ids);
+            if (orderError){
+                console.log("Error getting orders by manager id: ", orderError);
+                return null;
+            }
+            if (orderData){
+                if (orderData.length === 0){
+                    console.log('This managers trucks have no orders');
+                    return [];
+                }
+                const orderList: Order[] = orderData as Order[];
+                orderList.sort((a,b) => a.order_id - b.order_id);
+                return orderList; 
+            }
+        }
+    }
+    catch(err){
+        console.log("Exception thrown in getOrdersByManagerId for manager id: ", managerId, ": ", err);
+    }
+    return null;
+}
+
+export async function getOrdersByEmployeeId(employeeId: string){
+    try{
+        const { data: truckAssignmentData, error: truckAssignmentError } = await supabase
+            .from("truck_assignment")
+            .select("*")
+            .eq("employee_id", employeeId);
+        if(truckAssignmentError){
+            console.log("Error getting orders by employee id, failed to get truck assignment data: ", truckAssignmentError);
+            return null;
+        }
+        if (truckAssignmentData){
+            if (truckAssignmentData.length === 0){
+                console.log("This employee does not have a truck assignment");
+                return null;
+            }
+            const truckId: number = truckAssignmentData[0].truck_id;
+            console.log("Successfully retrieved truck_assignment, querying orders for truck_id: ", truckId);
+            //now fetch the order
+            const { data: orderData, error: orderError } = await supabase
+                .from("orders")
+                .select("*")
+                .eq("truck_id", truckId);
+            
+            if(orderError){
+                console.log("Error getting orders by employee id, failed to get order data: ", orderError);
+                return null;
+            }
+            if (orderData){
+                if (orderData.length === 0){
+                    console.log("There are no orders for truck id: ", truckId);
+                    return [];
+                }
+                const orderList: Order[] = orderData as Order[];
+                orderList.sort((a,b) => a.order_id - b.order_id);
+                return orderList; 
+            }
+
+        }
+    }
+    catch(err){
+        console.log("Exception thrown in getOrdersByEmployeeId for employeeId: ", employeeId, ": ", err);
+    }
+    return null;
+}
 
 export async function getOrders() {
     try {
