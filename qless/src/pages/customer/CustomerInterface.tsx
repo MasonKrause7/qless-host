@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import OrderMenu from '../../components/customer/OrderMenu';
-import "../../styles/customer/customerInterface.css";
+import "../../styles/customer/CustomerInterface.css";
 import { CustomerInterfaceView } from '../../service/customerInterfaceService';
 import CustLanding from '../../components/customer/CustLanding';
 import ViewCart from '../../components/customer/ViewCart';
