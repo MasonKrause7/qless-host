@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useUser } from '../../hooks/UserContext';
 import '../../styles/global.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import logo from '../../assets/qlessLogo.png';
 
 export default function Header() {
 
@@ -43,7 +44,7 @@ export default function Header() {
     return (
         <div className="queuelessBrandBar">
             <div className="logoContainer">
-                <img src="./src/assets/qlessLogo.png" alt="Queuless Logo" />
+                <img src={logo} alt="Queuless Logo" />
                 <p className="moto">Scan, Skip, Bam!</p>
             </div>
             <h3 className="queueless">Queueless</h3>
