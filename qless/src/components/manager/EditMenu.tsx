@@ -7,7 +7,6 @@ import {
     updateMenu, 
     uploadProductImage, 
     createProduct, 
-    updateProduct,
     deleteProduct 
 } from '../../service/supabaseService';
 import ErrorMessage from '../commonUI/ErrorMessage';

@@ -2,7 +2,7 @@ import '../../styles/kitchen/cookDashboard.css';
 import { Order, Truck, User } from '../../App';
 import { OrderStatus, getOrderStatus } from '../../service/orderStatusService';
 import { UpdateOrderStatusButton } from './UpdateOrderStatusButton';
-import supabase from '../../utils/supabase';
+//import supabase from '../../utils/supabase';
 import { CookDashboardView, lastUpdateTime } from '../../service/cookDashboardService';
 
 type ListOrdersProps = {
@@ -142,6 +142,7 @@ function ViewPastOrders({
 }
 
 //for testing
+/*
 function TempResetButton({ refreshOrders }: { refreshOrders: () => Promise<void> }) {
 
     const click = () => {
@@ -187,3 +188,4 @@ function TempResetButton({ refreshOrders }: { refreshOrders: () => Promise<void>
 
     return <button onClick={click}>Reset</button>
 }
+    */
