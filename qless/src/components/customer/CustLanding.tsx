@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CustomerInterfaceView } from "../../service/customerInterfaceService";
 import ErrorMessage from "../commonUI/ErrorMessage";
 import { useCustomerOrder } from "../../hooks/CustomerOrderContext";
-import "../../styles/customer/customerInterface.css"
+import "../../styles/customer/CustomerInterface.css"
 import "../../styles/global.css"
 
 
