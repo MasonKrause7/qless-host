@@ -22,7 +22,7 @@ const PasswordReset = () => {
     
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `qless-host.vercel.app/reset-password-confirm`,
+        redirectTo: `https://qless-host.vercel.app/reset-password-confirm`,
       });
       
       if (error) {
